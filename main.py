@@ -49,10 +49,22 @@ try:
         #* Start SEAL
 
         try:
-            from master import create_master_password
-            create_master_password(stdscr)
+            from user import choose_username
+            from encryption import encrypt, decrypt
 
-        except Exception as e:
+            username, password = choose_username(stdscr)
+            encrypt(
+                username,
+                password,
+                [
+                    ["Outlook", "john@outlook.com", "InD9RQSVF0ZJ3up6", "azure"],
+                    ["Google", "john@gmail.com", "FtF9VDFnxMMgzVlE", "green"],
+                    ["Steam", "john@gmail.com", "lC3NdFOXXG9a9FHe", "blue"],
+                ],
+            )
+            decrypt(username, password)
+
+        except ModuleNotFoundError as e:
             exception_handler(
                 message="\033[96mMissing required file '\033[92mmaster.py\033[96m'. Please restore or re-download it.\033[0m",
                 Exception=e,
