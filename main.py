@@ -47,17 +47,6 @@ try:
             )
 
         #* Start SEAL
-        """
-        stdscr.move(0, 0)
-        stdscr.addstr("SEAL LOGO1\n")
-        stdscr.move(1, 0)
-        stdscr.addstr("SEAL LOGO2\n")
-        stdscr.move(2, 0)
-        stdscr.addstr("SEAL LOGO3\n")
-        stdscr.move(3, 0)
-        stdscr.addstr("SEAL LOGO4\n")
-        stdscr.refresh()
-        """
 
         try:
             from master import create_master_password
