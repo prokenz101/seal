@@ -70,6 +70,8 @@ try:
                 message="\033[96mMissing required file '\033[92mmaster.py\033[96m'. Please restore or re-download it.\033[0m",
                 Exception=e,
             )
+        except Exception as e:
+            exception_handler(Exception=e)
 
     curses.wrapper(main)
     exit_seal()
@@ -91,3 +93,6 @@ You must install it using '\033[32mpip install \033[92m{module_name}\033[96m'\03
             message="""\033[96mBoth modules '\033[92mwindows_curses\033[96m' and '\033[92mcryptography\033[96m' were not found.
 You must install them using '\033[32mpip install \033[92mwindows_curses\033[0m\033[32m,\033[92m \033[92mcryptography\033[0m\033[96m'\033[0m""",
         )
+
+except Exception as e:
+    exception_handler(Exception=e)
