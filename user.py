@@ -1,3 +1,9 @@
+
+#* For handling the master password
+
+import curses
+
+
 def choose_username(stdscr: curses.window) -> tuple[str, str]:
     #! Clear the terminal
     stdscr.clear()
@@ -194,3 +200,15 @@ def choose_master_password(stdscr: curses.window, username: str) -> tuple[str, s
 
     return username, master_password
 
+
+def create_salt(username: str) -> None:
+    from pickle import dump
+    from hashlib import sha256
+    from os import urandom, makedirs
+
+    username_hash = sha256(username.encode()).hexdigest()
+    salt = urandom(16)
+    makedirs("salts", exist_ok=True)
+
+    with open(f"salts/{username_hash}_salt.dat", "wb") as f:
+        dump(salt, f)
