@@ -12,6 +12,7 @@ def exception_handler(message="Something went wrong.", Exception=None):
 
 try:
     import curses
+
     # import cryptography
 
     stdscr = curses.initscr()  #* Initialize the curses
@@ -70,7 +71,6 @@ try:
                 Exception=e,
             )
 
-    # stdscr.getch()
     curses.wrapper(main)
     exit_seal()
 
