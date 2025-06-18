@@ -27,13 +27,9 @@ def create_master_password(stdscr):
                 "[!] Cannot be greater than 64 characters\n", curses.color_pair(3)
             )
             requirements["len"] = False
-            allow_typing = (
-                False  #! Prevents user from typing more than 64 characters
-            )
+            allow_typing = False  #! Prevents user from typing more than 64 characters
         else:
-            stdscr.addstr(
-                "[X] Requires at least 12 characters\n", curses.color_pair(1)
-            )
+            stdscr.addstr("[X] Requires at least 12 characters\n", curses.color_pair(1))
             requirements["len"] = False
 
         #* Check if password has at least one uppercase and lowercase letter
@@ -46,7 +42,8 @@ def create_master_password(stdscr):
             requirements["upperlower"] = True
         else:
             stdscr.addstr(
-                "[X] Requires at least one uppercase and one lowercase letter\n", curses.color_pair(1)
+                "[X] Requires at least one uppercase and one lowercase letter\n",
+                curses.color_pair(1),
             )
             requirements["upperlower"] = False
 
@@ -67,7 +64,8 @@ def create_master_password(stdscr):
         stdscr.move(5, 0)
         if any(c in "!#$%&()*+,-./:;<=>?@[]^_`{|}~" for c in password):
             stdscr.addstr(
-                "[\u2713] Requires at least one special character\n", curses.color_pair(2)
+                "[\u2713] Requires at least one special character\n",
+                curses.color_pair(2),
             )
             requirements["special"] = True
         else:
@@ -75,13 +73,13 @@ def create_master_password(stdscr):
                 "[X] Requires at least one special character\n", curses.color_pair(1)
             )
             requirements["special"] = False
-        
+
         stdscr.move(6, 0)
-        stdscr.clrtoeol() #* Adds a new line
-        
+        stdscr.clrtoeol()  #* Adds a new line
+
         stdscr.move(7, 0)
         if show_password:
-            stdscr.addstr("Press 'Tab' to hide password\n")    
+            stdscr.addstr("Press 'Tab' to hide password\n")
             stdscr.addstr(8, 0, "Password: " + password + " ")
         else:
             stdscr.addstr("Press 'Tab' to show password\n")
@@ -107,7 +105,7 @@ def create_master_password(stdscr):
         #* Accepts printable ASCII characters, except for [\, ", '], so long as the user is allowed to type
         elif (32 <= ch <= 126) and (ch not in [92, 39, 34]) and allow_typing:
             password += chr(ch)
-    
+
     stdscr.clear()
     stdscr.move(0, 0)
     stdscr.refresh()
