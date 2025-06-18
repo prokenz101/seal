@@ -7,7 +7,7 @@ import curses
 def create_master_password(stdscr):
     password = ""
     stdscr.addstr("Create master password:\n", curses.A_BOLD)
-    requirements = {"len": False, "upperlower": False}
+    requirements = {"len": False, "upperlower": False, "digit": False, "special": False}
     show_password = False
 
     while True:
@@ -56,10 +56,12 @@ def create_master_password(stdscr):
             stdscr.addstr(
                 "[\u2713] Requires at least one numerical digit\n", curses.color_pair(2)
             )
+            requirements["digit"] = True
         else:
             stdscr.addstr(
                 "[X] Requires at least one numerical digit\n", curses.color_pair(1)
             )
+            requirements["digit"] = False
 
         #* Check if password has at least one special character
         stdscr.move(5, 0)
@@ -67,19 +69,22 @@ def create_master_password(stdscr):
             stdscr.addstr(
                 "[\u2713] Requires at least one special character\n", curses.color_pair(2)
             )
+            requirements["special"] = True
         else:
             stdscr.addstr(
                 "[X] Requires at least one special character\n", curses.color_pair(1)
             )
+            requirements["special"] = False
         
         stdscr.move(6, 0)
         stdscr.clrtoeol() #* Adds a new line
-        stdscr.move(7, 0)
-        stdscr.addstr("Press 'Tab' to show password\n")
         
+        stdscr.move(7, 0)
         if show_password:
+            stdscr.addstr("Press 'Tab' to hide password\n")    
             stdscr.addstr(8, 0, "Password: " + password + " ")
         else:
+            stdscr.addstr("Press 'Tab' to show password\n")
             stdscr.addstr(8, 0, "Password: " + "*" * len(password) + " ")
         stdscr.move(8, 10 + len(password))  #* Move cursor to end of password
         stdscr.refresh()

@@ -12,7 +12,7 @@ def exception_handler(message="Something went wrong.", Exception=None):
 
 try:
     import curses
-    import cryptography
+    # import cryptography
 
     stdscr = curses.initscr()  #* Initialize the curses
     curses.noecho()  #* Hides user inputs
@@ -45,16 +45,30 @@ try:
         #! Clear the terminal
         stdscr.clear()
 
+        #* Start SEAL
+        """
+        stdscr.move(0, 0)
+        stdscr.addstr("SEAL LOGO1\n")
+        stdscr.move(1, 0)
+        stdscr.addstr("SEAL LOGO2\n")
+        stdscr.move(2, 0)
+        stdscr.addstr("SEAL LOGO3\n")
+        stdscr.move(3, 0)
+        stdscr.addstr("SEAL LOGO4\n")
+        stdscr.refresh()
+        """
+
         try:
             from master import create_master_password
             create_master_password(stdscr)
 
-        except Exception as e:
+        except Exception as e8:
             exception_handler(
                 message="\033[96mMissing required file '\033[92mmaster.py\033[96m'. Please restore or re-download it.\033[0m",
                 Exception=e,
             )
 
+    # stdscr.getch()
     curses.wrapper(main)
     exit_seal()
 
