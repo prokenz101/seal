@@ -62,7 +62,7 @@ try:
             from master import create_master_password
             create_master_password(stdscr)
 
-        except Exception as e8:
+        except Exception as e:
             exception_handler(
                 message="\033[96mMissing required file '\033[92mmaster.py\033[96m'. Please restore or re-download it.\033[0m",
                 Exception=e,
