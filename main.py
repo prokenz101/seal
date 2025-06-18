@@ -32,18 +32,19 @@ try:
         curses.start_color()
 
         if curses.can_change_color():
-            #* Define color number 10 as orange
-            curses.init_color(10, 1000, 647, 0)
+            curses.init_color(10, 1000, 647, 0)  #* orange
             curses.init_pair(1, 10, curses.COLOR_BLACK)
+
+            curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_BLACK)
+            curses.init_pair(3, curses.COLOR_RED, curses.COLOR_BLACK)
+
+            curses.init_color(11, 0, 686, 800)  #* teal
+            curses.init_pair(4, 11, curses.COLOR_BLACK)
         else:
             stdscr.clear()
-            stdscr.addstr("Terminal doesn't support custom colors.\n", curses.A_BOLD)
-
-        curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_BLACK)
-        curses.init_pair(3, curses.COLOR_RED, curses.COLOR_BLACK)
-
-        #! Clear the terminal
-        stdscr.clear()
+            exception_handler(
+                message="\033[96mYour terminal does not support colored text.\033[0m"
+            )
 
         #* Start SEAL
         """
