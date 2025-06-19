@@ -72,6 +72,14 @@ def main(stdscr):
 
 
 try:
+    from sys import modules
+
+    if "idlelib.run" in modules:
+        print("This program utilizes features that cannot be run on the Python IDLE.")
+        print("Please run it in a dedicated terminal.")
+        input()
+        exit()
+
     import curses
     import cryptography
 
