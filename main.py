@@ -49,8 +49,8 @@ try:
         #* Start SEAL
 
         try:
-            from user import choose_username
-            from encryption import encrypt, decrypt
+            from scripts.user import choose_username
+            from scripts.encryption import encrypt, decrypt
 
             username, password = choose_username(stdscr)
             encrypt(
