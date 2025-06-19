@@ -10,6 +10,11 @@ def exception_handler(message="Something went wrong.", Exception=None):
     exit()
 
 
+def rgb_to_curses_color(r, g, b):
+    return int(r * 1000 / 255), int(g * 1000 / 255), int(b * 1000 / 255)
+
+
+        curses.init_color(11, *rgb_to_curses_color(125, 229, 255))  #* teal
 try:
     import curses
     import cryptography
