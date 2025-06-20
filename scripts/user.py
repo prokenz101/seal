@@ -4,7 +4,7 @@
 import curses
 
 
-def choose_username(stdscr: curses.window) -> tuple[str, str]:
+def choose_username(stdscr) -> tuple[str, str]:
     #! Clear the terminal
     stdscr.clear()
 
@@ -83,7 +83,7 @@ def choose_username(stdscr: curses.window) -> tuple[str, str]:
     return choose_master_password(stdscr, username)
 
 
-def choose_master_password(stdscr: curses.window, username: str) -> tuple[str, str]:
+def choose_master_password(stdscr, username: str) -> tuple[str, str]:
     #! Clear the terminal
     stdscr.clear()
 
