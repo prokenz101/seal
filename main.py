@@ -34,6 +34,8 @@ def main(stdscr):
 
         curses.init_color(11, *rgb_to_curses_color(125, 229, 255))  #* teal
         curses.init_pair(4, 11, curses.COLOR_BLACK)
+
+        curses.init_pair(5, curses.COLOR_WHITE, curses.COLOR_BLACK)
     else:
         stdscr.clear()
         exception_handler(
@@ -49,17 +51,17 @@ def main(stdscr):
 
         welcome(stdscr)
 
-        username, password = choose_username(stdscr)
-        encrypt(
-            username,
-            password,
-            [
-                ["Outlook", "john@outlook.com", "InD9RQSVF0ZJ3up6", "azure"],
-                ["Google", "john@gmail.com", "FtF9VDFnxMMgzVlE", "green"],
-                ["Steam", "john@gmail.com", "lC3NdFOXXG9a9FHe", "blue"],
-            ],
-        )
-        decrypt(username, password)
+        # username, password = choose_username(stdscr)
+        # encrypt(
+        #     username,
+        #     password,
+        #     [
+        #         ["Outlook", "john@outlook.com", "InD9RQSVF0ZJ3up6", "azure"],
+        #         ["Google", "john@gmail.com", "FtF9VDFnxMMgzVlE", "green"],
+        #         ["Steam", "john@gmail.com", "lC3NdFOXXG9a9FHe", "blue"],
+        #     ],
+        # )
+        # decrypt(username, password)
 
     except ModuleNotFoundError as e:
         missing_file = str(e).split("'")[1].split(".")[1]
@@ -73,12 +75,13 @@ def main(stdscr):
 
 try:
     from sys import modules
+    from os import path, system
 
     if "idlelib.run" in modules:
-        print("This program utilizes features that cannot be run on the Python IDLE.")
-        print("Please run it in a dedicated terminal.")
-        input()
-        exit()
+        #! Program runs itself in a terminal if it is run in IDLE
+        #! This is because IDLE does not support curses, or colored text
+        script = path.abspath(__file__)
+        system(f"start \"\" py \"{script}\"")
 
     import curses
     import cryptography
