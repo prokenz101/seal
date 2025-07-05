@@ -1,29 +1,4 @@
-from scripts.menu import normal_launch
-
-
-def exception_handler(message="Something went wrong.", Exception=None):
-    print("\033[91m\033[1m[Fatal Error]\033[0m")  #* Red color
-    print()
-    print(message)
-    print()
-    if Exception:
-        print("\033[93mFull error details:\033[0m")
-        print(Exception)
-        print()
-    exit()
-
-
-def rgb_to_curses_color(r, g, b):
-    return int(r * 1000 / 255), int(g * 1000 / 255), int(b * 1000 / 255)
-
-
-def exit_seal():
-    #* Exit the program and restore terminal settings
-    curses.nocbreak()
-    stdscr.keypad(False)
-    curses.echo()
-    curses.endwin()
-    exit()
+from scripts.utils import exit_seal, exception_handler, rgb_to_curses_color, is_all_modules_installed
 
 
 def main(stdscr):
