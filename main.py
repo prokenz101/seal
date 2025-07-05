@@ -72,6 +72,7 @@ try:
         script = path.abspath(__file__) #* Path of main.py
         system(f"start \"\" py \"{script}\"")
 
+if is_all_modules_installed():
     import curses
     from cryptography import __version__ #* Importing nothing from cryptography, just checking if it is installed
 
@@ -81,25 +82,4 @@ try:
     stdscr.keypad(True)  #* Enable the keypad keys
 
     curses.wrapper(main)
-    exit_seal()
-
-except ModuleNotFoundError as e1:  #* Printing out a detailed, specific error message
-    module_name = str(e1).split("'")[1]
-    module_name = "windows_curses" if module_name == "_curses" else module_name
-    try:
-        if module_name == "windows_curses":
-            from cryptography import __version__
-        exception_handler(
-            message=f"""\033[96mModule '\033[92m{module_name}\033[96m' not found.
-You must install it using '\033[32mpip install \033[92m{module_name}\033[96m'\033[0m""",
-            Exception=e1,
-        )
-
-    except ModuleNotFoundError as e2:
-        exception_handler(
-            message="""\033[96mBoth modules '\033[92mwindows_curses\033[96m' and '\033[92mcryptography\033[96m' were not found.
-You must install them using '\033[32mpip install \033[92mwindows_curses\033[0m\033[32m,\033[92m \033[92mcryptography\033[0m\033[96m'\033[0m""",
-        )
-
-except Exception as e:
-    exception_handler(Exception=e)
+    exit_seal(stdscr)
