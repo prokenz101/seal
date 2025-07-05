@@ -1,4 +1,5 @@
 import curses
+from scripts.utils import reset_line
 from scripts.user import choose_username
 
 
@@ -31,7 +32,7 @@ def first_time_launch(stdscr):
         stdscr.addstr(14, 0, ">")
         stdscr.move(14, 2)
 
-        stdscr.refresh()
+        # stdscr.refresh()
         stdscr.addstr(14, 1, " " + prompt + " ")
         stdscr.move(14, 2 + len(prompt))  #* Move cursor to end of prompt
         ch = stdscr.getch()  #* Wait for user key press
@@ -53,8 +54,13 @@ def first_time_launch(stdscr):
 
     stdscr.clear()
     stdscr.move(0, 0)
-    stdscr.refresh()
-    choose_username(stdscr)
+    # stdscr.refresh()
+    if prompt == "1":
+        setup_my_sql(stdscr)
+        # choose_username(stdscr)
+    elif prompt == "2":
+        #! Exiting...
+        pass
 
 
 def normal_launch(stdscr):
@@ -113,6 +119,92 @@ def normal_launch(stdscr):
         enter_vault(stdscr)
     elif prompt == "2":
         pass
+
+
+def setup_my_sql(stdscr):
+    #! Clear the terminal
+    stdscr.clear()
+
+    data = {
+        "host": "localhost",
+        "port": "3306",
+        "username": "root",
+        "password": "",
+    }
+
+    colors = [curses.color_pair(6), curses.color_pair(6), curses.color_pair(6)]
+    possible_moving_pos = [[5, 10], [4, 10], [3, 6], [2, 6]]
+    current_pos = 0
+    pos_to_data = {2: "host", 3: "port", 4: "username", 5: "password"}
+
+    while True:
+        for key, default in [("host", "localhost"), ("port", "3306"), ("username", "root")]:
+            if data[key] == default:
+                data[key] += " (default)"
+
+        stdscr.addstr(0, 0, "Set up MySQL connection:", curses.A_BOLD)
+        stdscr.move(1, 0)
+        stdscr.clrtoeol()
+        stdscr.addstr(2, 0, f"Host: {data['host']}", colors[0])
+        stdscr.addstr(3, 0, f"Port: {data['port']}", colors[1])
+        stdscr.addstr(4, 0, f"Username: {data['username']}", colors[2])
+        stdscr.addstr(5, 0, f"Password: {data['password']}", curses.color_pair(5))
+
+        stdscr.move(*possible_moving_pos[current_pos])
+        ch = stdscr.getch()
+
+        if ch == curses.KEY_UP and current_pos < 3:
+            current_pos += 1
+            colors[3 - current_pos] = curses.color_pair(5)
+            if current_pos > 1:
+                colors[4 - current_pos] = curses.color_pair(6)
+
+        elif ch == curses.KEY_DOWN and current_pos > 0:
+            current_pos -= 1
+            colors[2 - current_pos] = curses.color_pair(6)
+            if not current_pos == 0:
+                colors[3 - current_pos] = curses.color_pair(5)
+
+        elif ch in (curses.KEY_ENTER, 10, 13):
+            ...
+
+        else:
+            #* Edit mode
+            editing = pos_to_data[possible_moving_pos[current_pos][0]]
+
+            if editing == "password":
+                # if " (default)" in data[editing]:
+                #     data[editing] = ""
+
+                if 32 <= ch <= 126:  #*  Printable ASCII characters
+                    data[editing] += chr(ch)
+                    possible_moving_pos[current_pos][1] += 1
+                    reset_line(stdscr, possible_moving_pos[current_pos][0], 0)
+
+                elif ch in (curses.KEY_BACKSPACE, 127, 8):
+                    if data[editing]:
+                        data[editing] = data[editing][:-1]
+                        possible_moving_pos[current_pos][1] -= 1
+                        reset_line(stdscr, possible_moving_pos[current_pos][0], 0)
+
+            elif editing == "username":
+
+                if chr(ch) in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$@.-":
+                    if " (default)" in data[editing]:
+                        data[editing] = ""
+                        reset_line(stdscr, possible_moving_pos[current_pos][0], 0)
+                    data[editing] += chr(ch)
+                    possible_moving_pos[current_pos][1] += 1
+                    reset_line(stdscr, possible_moving_pos[current_pos][0], 0)
+
+                elif ch in (curses.KEY_BACKSPACE, 127, 8):
+                    if data[editing]:
+                        data[editing] = data[editing][:-1]
+                        possible_moving_pos[current_pos][1] -= 1
+
+                        if data[editing] == "":
+                            data[editing] = "localhost"
+                        reset_line(stdscr, possible_moving_pos[current_pos][0], 0)
 
 
 def enter_vault(stdscr):
