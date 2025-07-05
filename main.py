@@ -1,3 +1,6 @@
+from scripts.menu import normal_launch
+
+
 def exception_handler(message="Something went wrong.", Exception=None):
     print("\033[91m\033[1m[Fatal Error]\033[0m")  #* Red color
     print()
@@ -45,13 +48,24 @@ def main(stdscr):
     #* Start SEAL
 
     try:
-        from scripts.user import choose_username
-        from scripts.encryption import encrypt, decrypt
-        from scripts.menu import welcome
+        # from scripts.encryption import encrypt, decrypt
+        from scripts.menu import first_time_launch
+        from re import compile
+        from os import path, listdir
 
-        welcome(stdscr)
+        #* Check if an account exists
+        
+        if path.exists("salts"):
+            salts_dir_files = listdir("salts")
+            if any(f.endswith('.dat') for f in salts_dir_files):
+                hash_pattern = compile(r"[A-Fa-f0-9]{64}")
+                if any(hash_pattern.search(f) for f in salts_dir_files):
+                    normal_launch(stdscr)
+                else:
+                    exception_handler(message="\033[96mInvalid account hash found in 'salts' directory.\033[0m")
+        else:
+            first_time_launch(stdscr)
 
-        # username, password = choose_username(stdscr)
         # encrypt(
         #     username,
         #     password,
@@ -80,11 +94,11 @@ try:
     if "idlelib.run" in modules:
         #! Program runs itself in a terminal if it is run in IDLE
         #! This is because IDLE does not support curses, or colored text
-        script = path.abspath(__file__)
+        script = path.abspath(__file__) #* Path of main.py
         system(f"start \"\" py \"{script}\"")
 
     import curses
-    import cryptography
+    from cryptography import __version__ #* Importing nothing from cryptography, just checking if it is installed
 
     stdscr = curses.initscr()  #* Initialize the curses
     curses.noecho()  #* Hides user inputs
