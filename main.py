@@ -14,6 +14,7 @@ def main(stdscr):
         curses.init_pair(4, 11, curses.COLOR_BLACK)
 
         curses.init_pair(5, curses.COLOR_WHITE, curses.COLOR_BLACK)
+        curses.init_pair(6, 8, curses.COLOR_BLACK) #*  gray
     else:
         stdscr.clear()
         exception_handler(
@@ -24,9 +25,9 @@ def main(stdscr):
 
     try:
         # from scripts.encryption import encrypt, decrypt
-        from scripts.menu import first_time_launch
         from re import compile
         from os import path, listdir
+        from scripts.menu import first_time_launch, normal_launch
 
         #* Check if an account exists
         
@@ -37,7 +38,7 @@ def main(stdscr):
                 if any(hash_pattern.search(f) for f in salts_dir_files):
                     normal_launch(stdscr)
                 else:
-                    exception_handler(message="\033[96mInvalid account hash found in 'salts' directory.\033[0m")
+                    exception_handler(message="Invalid account hash found in \033[96m'salts'\033[0m directory.")
         else:
             first_time_launch(stdscr)
 
@@ -62,19 +63,17 @@ def main(stdscr):
         exception_handler(Exception=e)
 
 
-try:
-    from sys import modules
-    from os import path, system
+from sys import modules
+from os import path, system
 
-    if "idlelib.run" in modules:
-        #! Program runs itself in a terminal if it is run in IDLE
-        #! This is because IDLE does not support curses, or colored text
-        script = path.abspath(__file__) #* Path of main.py
-        system(f"start \"\" py \"{script}\"")
+if "idlelib.run" in modules:
+    #! Program runs itself in a terminal if it is run in IDLE
+    #! This is because IDLE does not support curses, or colored text
+    script = path.abspath(__file__) #* Path of main.py
+    system(f"start \"\" py \"{script}\"")
 
 if is_all_modules_installed():
     import curses
-    from cryptography import __version__ #* Importing nothing from cryptography, just checking if it is installed
 
     stdscr = curses.initscr()  #* Initialize the curses
     curses.noecho()  #* Hides user inputs
