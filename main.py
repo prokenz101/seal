@@ -42,17 +42,6 @@ def main(stdscr):
         else:
             first_time_launch(stdscr)
 
-        # encrypt(
-        #     username,
-        #     password,
-        #     [
-        #         ["Outlook", "john@outlook.com", "InD9RQSVF0ZJ3up6", "azure"],
-        #         ["Google", "john@gmail.com", "FtF9VDFnxMMgzVlE", "green"],
-        #         ["Steam", "john@gmail.com", "lC3NdFOXXG9a9FHe", "blue"],
-        #     ],
-        # )
-        # decrypt(username, password)
-
     except ModuleNotFoundError as e:
         missing_file = str(e).split("'")[1].split(".")[1]
         exception_handler(
