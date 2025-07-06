@@ -137,14 +137,16 @@ def setup_my_sql(stdscr):
     current_pos = 0
     pos_to_data = {2: "host", 3: "port", 4: "username", 5: "password"}
 
+    stdscr.addstr(0, 0, "Set up MySQL connection:", curses.A_BOLD)
+    stdscr.move(1, 0)
+    stdscr.clrtoeol()
+    stdscr.addstr(7, 0, "Use [▲] and [▼] arrow keys to navigate, and [Enter] to confirm.")
+
     while True:
-        stdscr.addstr(0, 0, "Set up MySQL connection:", curses.A_BOLD)
-        stdscr.move(1, 0)
-        stdscr.clrtoeol()
         stdscr.addstr(2, 0, f"Host: {data['host']}", colors[0])
         stdscr.addstr(3, 0, f"Port: {data['port']}", colors[1])
         stdscr.addstr(4, 0, f"Username: {data['username']}", colors[2])
-        stdscr.addstr(5, 0, f"Password: {data['password']}", curses.color_pair(5))
+        stdscr.addstr(5, 0, f"Password: {data['password']}", curses.A_BOLD)
 
         stdscr.move(*possible_moving_pos[current_pos])
         ch = stdscr.getch()
@@ -210,8 +212,43 @@ def setup_my_sql(stdscr):
             reset_line(stdscr, possible_moving_pos[current_pos][0], 0)
 
         elif ch in (curses.KEY_ENTER, 10, 13):
-            #TODO
-            pass
+            # Set default values if fields are empty
+            if data["host"] == "" or data["host"] == "localhost (default)":
+                data["host"] = "localhost"
+            if data["port"] == "" or data["port"] == "3306 (default)":
+                data["port"] = "3306"
+            if data["username"] == "" or data["username"] == "root (default)":
+                data["username"] = "root"
+
+            if not (1 <= int(data["port"]) <= 65535):
+                reset_line(stdscr, 7, 0)
+                stdscr.addstr(7, 0, "[!] Invalid port", curses.color_pair(3))
+
+            elif len(data["username"]) > 32:
+                reset_line(stdscr, 7, 0)
+                stdscr.addstr(7, 0, "[!] Username cannot be greater than 32 characters", curses.color_pair(3))
+            
+            else:
+                #* Verify connection
+                import mysql.connector
+
+                try:
+                    connection = mysql.connector.connect(
+                        host=data["host"],
+                        port=data["port"],
+                        user=data["username"],
+                        password=data["password"]
+                    )
+                    connection.close()
+                    reset_line(stdscr, 7, 0)
+                    stdscr.addstr(7, 0, "[\u2713] Connection successful!", curses.color_pair(2))
+                    stdscr.addstr(8, 0, "Press any key to continue...")
+                    stdscr.getch()
+                    break
+
+                except mysql.connector.Error as err:
+                    reset_line(stdscr, 7, 0)
+                    stdscr.addstr(7, 0, f"[!] Connection with MySQL server failed", curses.color_pair(3))
 
         else:
             #* Edit mode
