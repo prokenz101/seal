@@ -126,22 +126,19 @@ def setup_my_sql(stdscr):
     stdscr.clear()
 
     data = {
-        "host": "localhost",
-        "port": "3306",
-        "username": "root",
+        "host": "localhost (default)",
+        "port": "3306 (default)",
+        "username": "root (default)",
         "password": "",
     }
 
+    requirements = [True, True, True, False]
     colors = [curses.color_pair(6), curses.color_pair(6), curses.color_pair(6)]
     possible_moving_pos = [[5, 10], [4, 10], [3, 6], [2, 6]]
     current_pos = 0
     pos_to_data = {2: "host", 3: "port", 4: "username", 5: "password"}
 
     while True:
-        for key, default in [("host", "localhost"), ("port", "3306"), ("username", "root")]:
-            if data[key] == default:
-                data[key] += " (default)"
-
         stdscr.addstr(0, 0, "Set up MySQL connection:", curses.A_BOLD)
         stdscr.move(1, 0)
         stdscr.clrtoeol()
@@ -155,56 +152,113 @@ def setup_my_sql(stdscr):
 
         if ch == curses.KEY_UP and current_pos < 3:
             current_pos += 1
+            editing = pos_to_data[possible_moving_pos[current_pos][0]]
             colors[3 - current_pos] = curses.color_pair(5)
+
+            if " (default)" in data[editing]:
+                data[editing] = ""
+
             if current_pos > 1:
-                colors[4 - current_pos] = curses.color_pair(6)
+                prompt = data[pos_to_data[possible_moving_pos[current_pos - 1][0]]]
+                if prompt == "":
+                    data[pos_to_data[possible_moving_pos[current_pos - 1][0]]] = "root (default)" if editing == "port" else "3306 (default)" if editing == "host" else ""
+                    colors[4 - current_pos] = curses.color_pair(6)
+                elif (prompt == "3306" and editing == "host"):
+                    data[pos_to_data[possible_moving_pos[current_pos - 1][0]]] += " (default)"
+                    colors[4 - current_pos] = curses.color_pair(6)
+                    possible_moving_pos[2][1] = 6
+                elif (prompt == "root" and editing == "port"):
+                    data[pos_to_data[possible_moving_pos[current_pos - 1][0]]] += " (default)"
+                    colors[4 - current_pos] = curses.color_pair(6)
+                    possible_moving_pos[1][1] = 10
+                else:
+                    colors[4 - current_pos] = curses.color_pair(5) | curses.A_ITALIC
+
+            reset_line(stdscr, possible_moving_pos[current_pos - 1][0], 0)
+            reset_line(stdscr, possible_moving_pos[current_pos][0], 0)
 
         elif ch == curses.KEY_DOWN and current_pos > 0:
             current_pos -= 1
-            colors[2 - current_pos] = curses.color_pair(6)
-            if not current_pos == 0:
+            editing = pos_to_data[possible_moving_pos[current_pos][0]]
+            if current_pos > 0:
                 colors[3 - current_pos] = curses.color_pair(5)
 
+            if " (default)" in data[editing]:
+                data[editing] = ""
+
+            if current_pos < 3:
+                prompt = data[pos_to_data[possible_moving_pos[current_pos + 1][0]]]
+                if prompt == "":
+                    data[pos_to_data[possible_moving_pos[current_pos + 1][0]]] = "localhost (default)" if editing == "port" else "3306 (default)" if editing == "username" else "root (default)" if editing == "password" else ""
+                    colors[2 - current_pos] = curses.color_pair(6)
+                elif prompt == "localhost" and editing == "port":
+                    data[pos_to_data[possible_moving_pos[current_pos + 1][0]]] += " (default)"
+                    colors[2 - current_pos] = curses.color_pair(6)
+                    possible_moving_pos[3][1] = 6
+                elif prompt == "3306" and editing == "username":
+                    data[pos_to_data[possible_moving_pos[current_pos + 1][0]]] += " (default)"
+                    colors[2 - current_pos] = curses.color_pair(6)
+                    possible_moving_pos[2][1] = 6
+                elif prompt == "root" and editing == "password":
+                    data[pos_to_data[possible_moving_pos[current_pos + 1][0]]] += " (default)"
+                    colors[2 - current_pos] = curses.color_pair(6)
+                    possible_moving_pos[1][1] = 10
+                else:
+                    colors[2 - current_pos] = curses.color_pair(5) | curses.A_ITALIC
+
+
+            reset_line(stdscr, possible_moving_pos[current_pos + 1][0], 0)
+            reset_line(stdscr, possible_moving_pos[current_pos][0], 0)
+
         elif ch in (curses.KEY_ENTER, 10, 13):
-            ...
+            #TODO
+            pass
 
         else:
             #* Edit mode
             editing = pos_to_data[possible_moving_pos[current_pos][0]]
 
             if editing == "password":
-                # if " (default)" in data[editing]:
-                #     data[editing] = ""
-
                 if 32 <= ch <= 126:  #*  Printable ASCII characters
                     data[editing] += chr(ch)
                     possible_moving_pos[current_pos][1] += 1
-                    reset_line(stdscr, possible_moving_pos[current_pos][0], 0)
 
                 elif ch in (curses.KEY_BACKSPACE, 127, 8):
                     if data[editing]:
                         data[editing] = data[editing][:-1]
                         possible_moving_pos[current_pos][1] -= 1
-                        reset_line(stdscr, possible_moving_pos[current_pos][0], 0)
 
             elif editing == "username":
-
                 if chr(ch) in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$@.-":
-                    if " (default)" in data[editing]:
-                        data[editing] = ""
-                        reset_line(stdscr, possible_moving_pos[current_pos][0], 0)
                     data[editing] += chr(ch)
                     possible_moving_pos[current_pos][1] += 1
-                    reset_line(stdscr, possible_moving_pos[current_pos][0], 0)
 
                 elif ch in (curses.KEY_BACKSPACE, 127, 8):
                     if data[editing]:
                         data[editing] = data[editing][:-1]
                         possible_moving_pos[current_pos][1] -= 1
 
-                        if data[editing] == "":
-                            data[editing] = "localhost"
-                        reset_line(stdscr, possible_moving_pos[current_pos][0], 0)
+            elif editing == "port":
+                if chr(ch) in "0123456789":
+                    data[editing] += chr(ch)
+                    possible_moving_pos[current_pos][1] += 1
+
+                elif ch in (curses.KEY_BACKSPACE, 127, 8):
+                    if data[editing]:
+                        data[editing] = data[editing][:-1]
+                        possible_moving_pos[current_pos][1] -= 1
+
+            elif editing == "host":
+                if chr(ch) in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._":
+                    data[editing] += chr(ch)
+                    possible_moving_pos[current_pos][1] += 1
+
+                elif ch in (curses.KEY_BACKSPACE, 127, 8):
+                    if data[editing]:
+                        data[editing] = data[editing][:-1]
+                        possible_moving_pos[current_pos][1] -= 1
+
+            reset_line(stdscr, possible_moving_pos[current_pos][0], 0)
 
 
 def enter_vault(stdscr):
