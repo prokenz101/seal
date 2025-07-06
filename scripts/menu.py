@@ -1,5 +1,7 @@
 import curses
+from pickle import dump
 from scripts.utils import reset_line
+from scripts.encryption import encrypt
 from scripts.user import choose_username
 
 
@@ -277,6 +279,11 @@ def setup_my_sql(stdscr):
                 handle_key_press("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._")
 
             reset_line(stdscr, possible_moving_pos[current_pos][0], 0)
+
+    SQL_SERVER_PASSWORD = encrypt(*choose_username(stdscr), data["password"])
+
+    with open("mysql_seal.dat", "wb") as f:
+        dump(SQL_SERVER_PASSWORD, f)
 
 
 def enter_vault(stdscr):
