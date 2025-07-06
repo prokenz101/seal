@@ -57,7 +57,7 @@ def first_time_launch(stdscr):
     # stdscr.refresh()
     if prompt == "1":
         setup_my_sql(stdscr)
-        # choose_username(stdscr)
+        
     elif prompt == "2":
         #! Exiting...
         pass
