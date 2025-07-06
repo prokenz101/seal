@@ -254,8 +254,8 @@ def setup_my_sql(stdscr):
             #* Edit mode
             editing = pos_to_data[possible_moving_pos[current_pos][0]]
 
-            if editing == "password":
-                if 32 <= ch <= 126:  #*  Printable ASCII characters
+            def handle_key_press(allowable_characters):
+                if chr(ch) in allowable_characters:
                     data[editing] += chr(ch)
                     possible_moving_pos[current_pos][1] += 1
 
@@ -263,36 +263,18 @@ def setup_my_sql(stdscr):
                     if data[editing]:
                         data[editing] = data[editing][:-1]
                         possible_moving_pos[current_pos][1] -= 1
+
+            if editing == "password":
+                handle_key_press("".join(chr(i) for i in range(32, 127)))
 
             elif editing == "username":
-                if chr(ch) in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$@.-":
-                    data[editing] += chr(ch)
-                    possible_moving_pos[current_pos][1] += 1
-
-                elif ch in (curses.KEY_BACKSPACE, 127, 8):
-                    if data[editing]:
-                        data[editing] = data[editing][:-1]
-                        possible_moving_pos[current_pos][1] -= 1
+                handle_key_press("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$@.-")
 
             elif editing == "port":
-                if chr(ch) in "0123456789":
-                    data[editing] += chr(ch)
-                    possible_moving_pos[current_pos][1] += 1
-
-                elif ch in (curses.KEY_BACKSPACE, 127, 8):
-                    if data[editing]:
-                        data[editing] = data[editing][:-1]
-                        possible_moving_pos[current_pos][1] -= 1
+                handle_key_press("0123456789")
 
             elif editing == "host":
-                if chr(ch) in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._":
-                    data[editing] += chr(ch)
-                    possible_moving_pos[current_pos][1] += 1
-
-                elif ch in (curses.KEY_BACKSPACE, 127, 8):
-                    if data[editing]:
-                        data[editing] = data[editing][:-1]
-                        possible_moving_pos[current_pos][1] -= 1
+                handle_key_press("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._")
 
             reset_line(stdscr, possible_moving_pos[current_pos][0], 0)
 
