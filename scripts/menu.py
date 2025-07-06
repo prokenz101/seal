@@ -132,7 +132,6 @@ def setup_my_sql(stdscr):
         "password": "",
     }
 
-    requirements = [True, True, True, False]
     colors = [curses.color_pair(6), curses.color_pair(6), curses.color_pair(6)]
     possible_moving_pos = [[5, 10], [4, 10], [3, 6], [2, 6]]
     current_pos = 0
