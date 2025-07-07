@@ -1,8 +1,5 @@
 import curses
-from pickle import dump
 from scripts.utils import reset_line
-from scripts.encryption import encrypt
-from scripts.user import choose_username
 
 
 def first_time_launch(stdscr):
@@ -280,10 +277,41 @@ def setup_my_sql(stdscr):
 
             reset_line(stdscr, possible_moving_pos[current_pos][0], 0)
 
-    SQL_SERVER_PASSWORD = encrypt(*choose_username(stdscr), data["password"])
+    from pickle import dump, load
+    from os import makedirs, path, urandom
+    from scripts.encryption import get_fernet_key
 
-    with open("mysql_seal.dat", "wb") as f:
-        dump(SQL_SERVER_PASSWORD, f)
+    sql_server_password = data["password"]
+    app_salt_file = "appdata/app_salt.dat"
+    server_password_file = "appdata/mysql_config.seal"
+    app_master_password = "seal_app_encryption_secret"
+
+    makedirs("appdata", exist_ok=True)
+
+    if not path.exists(app_salt_file):
+        salt = urandom(16)
+        with open(app_salt_file, "wb") as f:
+            dump(salt, f)  #* Creating a salt for the global app master password
+    else:
+        with open(app_salt_file, "rb") as f:
+            salt = load(f)
+
+    fernet = get_fernet_key(app_master_password, app_salt_file)
+
+    #* Encrypt SQL password
+    encrypted_sql_password = fernet.encrypt(sql_server_password.encode())
+
+    #* Save encrypted password
+    with open(server_password_file, "wb") as f:
+        dump(encrypted_sql_password, f)
+
+    #* To decrypt later
+    # with open(server_password_file, "rb") as f:
+    #     encrypted = load(f)
+    # decrypted_password = fernet.decrypt(encrypted).decode()
+
+    from scripts.user import choose_username
+    choose_username(stdscr)
 
 
 def enter_vault(stdscr):
