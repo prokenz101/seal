@@ -88,7 +88,7 @@ def normal_launch(stdscr):
         stdscr.clrtoeol()
 
         stdscr.addstr(9, 0, "Choose an option:")
-        stdscr.addstr(10, 0, "1. Enter vault", colors[0])
+        stdscr.addstr(10, 0, "1. Log in", colors[0])
         stdscr.addstr(11, 0, "2. Exit", colors[1])
 
         stdscr.move(12, 0)
@@ -248,7 +248,7 @@ def setup_my_sql(stdscr):
                     stdscr.getch()
                     break
 
-                except mysql.connector.Error as err:
+                except mysql.connector.Error:
                     reset_line(stdscr, 7, 0)
                     stdscr.addstr(7, 0, f"[!] Connection with MySQL server failed", curses.color_pair(3))
 
