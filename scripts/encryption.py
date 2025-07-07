@@ -6,10 +6,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 
-def get_fernet_key(username_hash: str, master_password: str) -> Fernet:
-
-    salt_file = f"salts/{username_hash}_salt.dat"
-
+def get_fernet_key(master_password: str, salt_file: str) -> Fernet:
     with open(salt_file, "rb") as f:
         salt = f.read()
 
@@ -28,7 +25,7 @@ def get_fernet_key(username_hash: str, master_password: str) -> Fernet:
 
 def encrypt(username: str, master_password: str, data: str) -> str:
     username_hash = sha256(username.encode()).hexdigest()
-    fernet = get_fernet_key(username_hash, master_password)
+    fernet = get_fernet_key(master_password, f"salts/{username_hash}_salt.dat")
     encrypted_data = fernet.encrypt(data.encode()).decode()
     return encrypted_data
 
@@ -47,7 +44,7 @@ def encrypt_data(username: str, master_password: str, data: list) -> list:
 
 def decrypt(username: str, master_password: str, data: str) -> str:
     username_hash = sha256(username.encode()).hexdigest()
-    fernet = get_fernet_key(username_hash, master_password)
+    fernet = get_fernet_key(master_password, f"salts/{username_hash}_salt.dat")
     decrypted_data = fernet.decrypt(data.encode()).decode()
     return decrypted_data
 
@@ -55,7 +52,7 @@ def decrypt(username: str, master_password: str, data: str) -> str:
 def decrypt_data(username: str, master_password: str, data: list) -> list:
     decrypted_data = []
     username_hash = sha256(username.encode()).hexdigest()
-    fernet = get_fernet_key(username_hash, master_password)
+    fernet = get_fernet_key(master_password, f"salts/{username_hash}_salt.dat")
 
     for record in data:
         decrypted_record = [fernet.decrypt(field.encode()).decode() for field in record]
