@@ -74,4 +74,4 @@ if is_all_modules_installed():
     stdscr.keypad(True)  #* Enable the keypad keys
 
     curses.wrapper(main)
-    exit_seal(stdscr)
+    exit_curses(stdscr)
