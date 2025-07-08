@@ -2,6 +2,7 @@
 #* For handling the master password
 
 import curses
+from scripts.curses_utils import getch, addstr, move
 
 
 def choose_username(stdscr) -> tuple[str, str]:
@@ -9,56 +10,75 @@ def choose_username(stdscr) -> tuple[str, str]:
     stdscr.clear()
 
     username = ""
-    stdscr.addstr("Create username:\n", curses.A_BOLD)
+    addstr(stdscr, 0, 0, "Create username:\n", curses.A_BOLD)
     requirements = {"length": False, "alphanumeric_lowercase": False}
 
     while True:
-        stdscr.move(1, 0)  #* Move cursor to requirements line
-        stdscr.addstr("Requirements:\n")
+        addstr(stdscr, 1, 0, "Requirements:\n")
         allow_typing = True
 
         #* Check if username meets length requirement
-        stdscr.move(2, 0)
         if len(username) < 3:
-            stdscr.addstr("[X] Requires at least 3 characters\n", curses.color_pair(1))
+            addstr(
+                stdscr,
+                2,
+                0,
+                "[X] Requires at least 3 characters\n",
+                curses.color_pair(1),
+            )
             requirements["length"] = False
         elif len(username) > 16:
-            stdscr.addstr(
-                "[!] Cannot be greater than 16 characters\n", curses.color_pair(3)
+            addstr(
+                stdscr,
+                2,
+                0,
+                "[!] Cannot be greater than 16 characters\n",
+                curses.color_pair(3),
             )
             requirements["length"] = False
             allow_typing = False
         else:
-            stdscr.addstr(
-                "[\u2713] Requires at least 3 characters\n", curses.color_pair(2)
+            addstr(
+                stdscr,
+                2,
+                0,
+                "[\u2713] Requires at least 3 characters\n",
+                curses.color_pair(2),
             )
             requirements["length"] = True
 
         #* Check if username contains only lowercase letters and numbers
-        stdscr.move(3, 0)
         if not all(c.islower() or c.isdigit() for c in username):
-            stdscr.addstr(
+            addstr(
+                stdscr,
+                3,
+                0,
                 "[!] Only lowercase letters and numbers are allowed\n",
                 curses.color_pair(3),
             )
             allow_typing = False
             requirements["alphanumeric_lowercase"] = False
         else:
-            stdscr.addstr(
+            addstr(
+                stdscr,
+                3,
+                0,
                 "[-] Only lowercase letters and numbers are allowed\n",
                 curses.color_pair(4),
             )
             requirements["alphanumeric_lowercase"] = True
 
-        stdscr.move(4, 0)
+        move(stdscr, 4, 0)
         stdscr.clrtoeol()  #* Adds a new line
 
-        stdscr.addstr(5, 0, "Username: " + username + " ")
+        addstr(stdscr, 5, 0, "Username: " + username + " ")
 
-        stdscr.move(5, 10 + len(username))  #* Move cursor to end of username
+        move(stdscr, 5, 10 + len(username))  #* Move cursor to end of username
         stdscr.refresh()
 
-        ch = stdscr.getch()  #* Get user key press
+        ch = getch(stdscr)  #* Get user key press
+        if ch == curses.KEY_RESIZE:
+            continue
 
         #* If Enter is pressed and requirement is met, exit loop
         if ch in (curses.KEY_ENTER, 10, 13):
@@ -76,10 +96,9 @@ def choose_username(stdscr) -> tuple[str, str]:
     # TODO: Add username to file or database
 
     stdscr.clear()
-    stdscr.move(0, 0)
     stdscr.refresh()
-    stdscr.addstr("Username set successfully!\n", curses.A_BOLD)
-    stdscr.getch()
+    addstr(stdscr, 0, 0, "Username set successfully!\n", curses.A_BOLD)
+    getch(stdscr)
     return choose_master_password(stdscr, username)
 
 
@@ -88,90 +107,121 @@ def choose_master_password(stdscr, username: str) -> tuple[str, str]:
     stdscr.clear()
 
     master_password = ""
-    stdscr.addstr("Create master password:\n", curses.A_BOLD)
+    addstr(stdscr, 0, 0, "Create master password:\n", curses.A_BOLD)
     requirements = {"len": False, "upperlower": False, "digit": False, "special": False}
     show_password = False
 
     while True:
-        stdscr.move(1, 0)  #* Move cursor to requirements line
-        stdscr.addstr("Requirements:\n")
+        addstr(stdscr, 1, 0, "Requirements:\n")
         allow_typing = True
 
         #* Check if password meets length requirement
-        stdscr.move(2, 0)
         if 12 <= len(master_password) <= 64:
-            stdscr.addstr(
-                "[\u2713] Requires at least 12 characters\n", curses.color_pair(2)
+            addstr(
+                stdscr,
+                2,
+                0,
+                "[\u2713] Requires at least 12 characters\n",
+                curses.color_pair(2),
             )
             requirements["len"] = True
         elif len(master_password) > 64:
-            stdscr.addstr(
-                "[!] Cannot be greater than 64 characters\n", curses.color_pair(3)
+            addstr(
+                stdscr,
+                2,
+                0,
+                "[!] Cannot be greater than 64 characters\n",
+                curses.color_pair(3),
             )
             requirements["len"] = False
             allow_typing = False  #! Prevents user from typing more than 64 characters
         else:
-            stdscr.addstr("[X] Requires at least 12 characters\n", curses.color_pair(1))
+            addstr(
+                stdscr,
+                2,
+                0,
+                "[X] Requires at least 12 characters\n",
+                curses.color_pair(1),
+            )
             requirements["len"] = False
 
         #* Check if password has at least one uppercase and lowercase letter
-        stdscr.move(3, 0)
         if any(c.isupper() for c in master_password) and any(
             c.islower() for c in master_password
         ):
-            stdscr.addstr(
+            addstr(
+                stdscr,
+                3,
+                0,
                 "[\u2713] Requires at least one uppercase and one lowercase letter\n",
                 curses.color_pair(2),
             )
             requirements["upperlower"] = True
         else:
-            stdscr.addstr(
+            addstr(
+                stdscr,
+                3,
+                0,
                 "[X] Requires at least one uppercase and one lowercase letter\n",
                 curses.color_pair(1),
             )
             requirements["upperlower"] = False
 
         #* Check if password has at least one digit
-        stdscr.move(4, 0)
         if any(c.isdigit() for c in master_password):
-            stdscr.addstr(
-                "[\u2713] Requires at least one numerical digit\n", curses.color_pair(2)
+            addstr(
+                stdscr,
+                4,
+                0,
+                "[\u2713] Requires at least one numerical digit\n",
+                curses.color_pair(2),
             )
             requirements["digit"] = True
         else:
-            stdscr.addstr(
-                "[X] Requires at least one numerical digit\n", curses.color_pair(1)
+            addstr(
+                stdscr,
+                4,
+                0,
+                "[X] Requires at least one numerical digit\n",
+                curses.color_pair(1),
             )
             requirements["digit"] = False
 
         #* Check if password has at least one special character
-        stdscr.move(5, 0)
         if any(c in "!#$%&()*+,-./:;<=>?@[]^_`{|}~" for c in master_password):
-            stdscr.addstr(
+            addstr(
+                stdscr,
+                5,
+                0,
                 "[\u2713] Requires at least one special character\n",
                 curses.color_pair(2),
             )
             requirements["special"] = True
         else:
-            stdscr.addstr(
-                "[X] Requires at least one special character\n", curses.color_pair(1)
+            addstr(
+                stdscr,
+                5,
+                0,
+                "[X] Requires at least one special character\n",
+                curses.color_pair(1),
             )
             requirements["special"] = False
 
-        stdscr.move(6, 0)
+        move(stdscr, 6, 0)
         stdscr.clrtoeol()  #* Adds a new line
 
-        stdscr.move(7, 0)
         if show_password:
-            stdscr.addstr("Press 'Tab' to hide password\n")
-            stdscr.addstr(8, 0, "Password: " + master_password + " ")
+            addstr(stdscr, 7, 0, "Press 'Tab' to hide password\n")
+            addstr(stdscr, 8, 0, "Password: " + master_password + " ")
         else:
-            stdscr.addstr("Press 'Tab' to show password\n")
-            stdscr.addstr(8, 0, "Password: " + "*" * len(master_password) + " ")
-        stdscr.move(8, 10 + len(master_password))  #* Move cursor to end of password
+            addstr(stdscr, 7, 0, "Press 'Tab' to show password\n")
+            addstr(stdscr, 8, 0, "Password: " + "*" * len(master_password) + " ")
+        move(stdscr, 8, 10 + len(master_password))  #* Move cursor to end of password
         stdscr.refresh()
 
-        ch = stdscr.getch()  #* Get user key press
+        ch = getch(stdscr)  #* Get user key press
+        if ch == curses.KEY_RESIZE:
+            continue
 
         #* If Enter is pressed and requirement is met, exit loop
         if ch in (curses.KEY_ENTER, 10, 13):
@@ -193,10 +243,9 @@ def choose_master_password(stdscr, username: str) -> tuple[str, str]:
     create_salt(username)
 
     stdscr.clear()
-    stdscr.move(0, 0)
     stdscr.refresh()
-    stdscr.addstr("Password set successfully!\n", curses.A_BOLD)
-    stdscr.getch()
+    addstr(stdscr, 0, 0, "Password set successfully!\n", curses.A_BOLD)
+    getch(stdscr)
 
     return username, master_password
 
