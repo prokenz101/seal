@@ -49,6 +49,9 @@ def main(stdscr):
             message=f"\033[96mMissing required file '\033[92mscripts/{missing_file}.py\033[96m'. Please restore or re-download it.\033[0m",
             Exception=e,
         )
+    except curses.error:
+        print("\033[91m\033[1m[Fatal Error]\033[0m")
+        print("Terminal window is too small to display text.")
     except Exception as e:
         exception_handler(Exception=e)
 
