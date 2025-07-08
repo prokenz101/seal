@@ -1,13 +1,13 @@
 import curses
-from scripts.utils import reset_line
+from scripts.curses_utils import reset_line, getch, move, addstr, footer
 
 
 def first_time_launch(stdscr):
     #! Clear the terminal
     stdscr.clear()
 
-    colors = [curses.color_pair(5), curses.color_pair(5)]
-    prompt = ""
+    colors = [curses.color_pair(7) | curses.A_UNDERLINE, curses.color_pair(5)]
+    curses.curs_set(0)
 
     while True:
         addstr(stdscr, 0, 11, "Welcome to", curses.A_BOLD)
@@ -62,34 +62,37 @@ def normal_launch(stdscr):
     prompt = ""
 
     while True:
-        stdscr.move(0, 0)
+        move(stdscr, 0, 0)
         stdscr.clrtoeol()
-        stdscr.addstr(1, 0, "███████╗███████╗ █████╗ ██╗     ", curses.color_pair(4))
-        stdscr.addstr(2, 0, "██╔════╝██╔════╝██╔══██╗██║     ", curses.color_pair(4))
-        stdscr.addstr(3, 0, "███████╗█████╗  ███████║██║     ", curses.color_pair(4))
-        stdscr.addstr(4, 0, "╚════██║██╔══╝  ██╔══██║██║     ", curses.color_pair(4))
-        stdscr.addstr(5, 0, "███████║███████╗██║  ██║███████╗", curses.color_pair(4))
-        stdscr.addstr(6, 0, "╚══════╝╚══════╝╚═╝  ╚═╝╚══════╝", curses.color_pair(4))
+        addstr(stdscr, 1, 0, "███████╗███████╗ █████╗ ██╗     ", curses.color_pair(4))
+        addstr(stdscr, 2, 0, "██╔════╝██╔════╝██╔══██╗██║     ", curses.color_pair(4))
+        addstr(stdscr, 3, 0, "███████╗█████╗  ███████║██║     ", curses.color_pair(4))
+        addstr(stdscr, 4, 0, "╚════██║██╔══╝  ██╔══██║██║     ", curses.color_pair(4))
+        addstr(stdscr, 5, 0, "███████║███████╗██║  ██║███████╗", curses.color_pair(4))
+        addstr(stdscr, 6, 0, "╚══════╝╚══════╝╚═╝  ╚═╝╚══════╝", curses.color_pair(4))
 
-        stdscr.move(7, 0)
+        move(stdscr, 7, 0)
         stdscr.clrtoeol()
-        stdscr.move(8, 0)
-        stdscr.clrtoeol()
-
-        stdscr.addstr(9, 0, "Choose an option:")
-        stdscr.addstr(10, 0, "1. Log in", colors[0])
-        stdscr.addstr(11, 0, "2. Exit", colors[1])
-
-        stdscr.move(12, 0)
+        move(stdscr, 8, 0)
         stdscr.clrtoeol()
 
-        stdscr.addstr(13, 0, ">")
-        stdscr.move(13, 2)
-        stdscr.addstr(13, 1, " " + prompt + " ")
-        stdscr.move(13, 2 + len(prompt))  #* Move cursor to end of prompt
+        addstr(stdscr, 9, 0, "Choose an option:")
+        addstr(stdscr, 10, 0, "1. Log in", colors[0])
+        addstr(stdscr, 11, 0, "2. Exit", colors[1])
+
+        move(stdscr, 12, 0)
+        stdscr.clrtoeol()
+
+        addstr(stdscr, 13, 0, ">")
+        move(stdscr, 13, 2)
+        addstr(stdscr, 13, 1, " " + prompt + " ")
+        move(stdscr, 13, 2 + len(prompt))  #* Move cursor to end of prompt
         stdscr.refresh()
 
-        ch = stdscr.getch()
+        ch = getch(stdscr)
+        if ch == curses.KEY_RESIZE:
+            continue
+
         #* If Enter is pressed and requirement is met, exit loop
         if (ch in (curses.KEY_ENTER, 10, 13)) and (prompt == "1" or prompt == "2"):
             break
@@ -124,54 +127,62 @@ def setup_my_sql(stdscr):
     }
 
     colors = [curses.color_pair(6), curses.color_pair(6), curses.color_pair(6)]
-    possible_moving_pos = [[5, 10], [4, 10], [3, 6], [2, 6]]
+    movements = [[5, 10], [4, 10], [3, 6], [2, 6]]
     current_pos = 0
     pos_to_data = {2: "host", 3: "port", 4: "username", 5: "password"}
 
-    stdscr.addstr(0, 0, "Set up MySQL connection:", curses.A_BOLD)
-    stdscr.move(1, 0)
-    stdscr.clrtoeol()
-    stdscr.addstr(7, 0, "Use [▲] and [▼] arrow keys to navigate, and [Enter] to confirm.")
-
     while True:
-        stdscr.addstr(2, 0, f"Host: {data['host']}", colors[0])
-        stdscr.addstr(3, 0, f"Port: {data['port']}", colors[1])
-        stdscr.addstr(4, 0, f"Username: {data['username']}", colors[2])
-        stdscr.addstr(5, 0, f"Password: {data['password']}", curses.A_BOLD)
+        addstr(stdscr, 0, 0, "Set up MySQL connection:", curses.A_BOLD)
+        move(stdscr, 1, 0)
+        stdscr.clrtoeol()
+        footer(
+            stdscr,
+            "Use [▲] and [▼] arrow keys to navigate, and [Enter] to confirm.",
+        )
+        addstr(stdscr, 2, 0, f"Host: {data['host']}", colors[0])
+        addstr(stdscr, 3, 0, f"Port: {data['port']}", colors[1])
+        addstr(stdscr, 4, 0, f"Username: {data['username']}", colors[2])
+        addstr(stdscr, 5, 0, f"Password: {data['password']}", curses.A_BOLD)
 
-        stdscr.move(*possible_moving_pos[current_pos])
-        ch = stdscr.getch()
+        move(stdscr, *movements[current_pos])
+        ch = getch(stdscr)
+        if ch == curses.KEY_RESIZE:
+            continue
 
         if ch == curses.KEY_UP and current_pos < 3:
             current_pos += 1
-            editing = pos_to_data[possible_moving_pos[current_pos][0]]
+            editing = pos_to_data[movements[current_pos][0]]
             colors[3 - current_pos] = curses.color_pair(5)
 
             if " (default)" in data[editing]:
                 data[editing] = ""
 
             if current_pos > 1:
-                prompt = data[pos_to_data[possible_moving_pos[current_pos - 1][0]]]
+                prompt = data[pos_to_data[movements[current_pos - 1][0]]]
                 if prompt == "":
-                    data[pos_to_data[possible_moving_pos[current_pos - 1][0]]] = "root (default)" if editing == "port" else "3306 (default)" if editing == "host" else ""
+                    data[pos_to_data[movements[current_pos - 1][0]]] = (
+                        "root (default)"
+                        if editing == "port"
+                        else "3306 (default)" if editing == "host" else ""
+                    )
                     colors[4 - current_pos] = curses.color_pair(6)
-                elif (prompt == "3306" and editing == "host"):
-                    data[pos_to_data[possible_moving_pos[current_pos - 1][0]]] += " (default)"
+                elif prompt == "3306" and editing == "host":
+                    data[pos_to_data[movements[current_pos - 1][0]]] += " (default)"
                     colors[4 - current_pos] = curses.color_pair(6)
-                    possible_moving_pos[2][1] = 6
-                elif (prompt == "root" and editing == "port"):
-                    data[pos_to_data[possible_moving_pos[current_pos - 1][0]]] += " (default)"
+                    movements[2][1] = 6
+                elif prompt == "root" and editing == "port":
+                    data[pos_to_data[movements[current_pos - 1][0]]] += " (default)"
                     colors[4 - current_pos] = curses.color_pair(6)
-                    possible_moving_pos[1][1] = 10
+                    movements[1][1] = 10
                 else:
                     colors[4 - current_pos] = curses.color_pair(5) | curses.A_ITALIC
 
-            reset_line(stdscr, possible_moving_pos[current_pos - 1][0], 0)
-            reset_line(stdscr, possible_moving_pos[current_pos][0], 0)
+            reset_line(stdscr, movements[current_pos - 1][0], 0)
+            reset_line(stdscr, movements[current_pos][0], 0)
 
         elif ch == curses.KEY_DOWN and current_pos > 0:
             current_pos -= 1
-            editing = pos_to_data[possible_moving_pos[current_pos][0]]
+            editing = pos_to_data[movements[current_pos][0]]
             if current_pos > 0:
                 colors[3 - current_pos] = curses.color_pair(5)
 
@@ -179,28 +190,35 @@ def setup_my_sql(stdscr):
                 data[editing] = ""
 
             if current_pos < 3:
-                prompt = data[pos_to_data[possible_moving_pos[current_pos + 1][0]]]
+                prompt = data[pos_to_data[movements[current_pos + 1][0]]]
                 if prompt == "":
-                    data[pos_to_data[possible_moving_pos[current_pos + 1][0]]] = "localhost (default)" if editing == "port" else "3306 (default)" if editing == "username" else "root (default)" if editing == "password" else ""
+                    data[pos_to_data[movements[current_pos + 1][0]]] = (
+                        "localhost (default)"
+                        if editing == "port"
+                        else (
+                            "3306 (default)"
+                            if editing == "username"
+                            else "root (default)" if editing == "password" else ""
+                        )
+                    )
                     colors[2 - current_pos] = curses.color_pair(6)
                 elif prompt == "localhost" and editing == "port":
-                    data[pos_to_data[possible_moving_pos[current_pos + 1][0]]] += " (default)"
+                    data[pos_to_data[movements[current_pos + 1][0]]] += " (default)"
                     colors[2 - current_pos] = curses.color_pair(6)
-                    possible_moving_pos[3][1] = 6
+                    movements[3][1] = 6
                 elif prompt == "3306" and editing == "username":
-                    data[pos_to_data[possible_moving_pos[current_pos + 1][0]]] += " (default)"
+                    data[pos_to_data[movements[current_pos + 1][0]]] += " (default)"
                     colors[2 - current_pos] = curses.color_pair(6)
-                    possible_moving_pos[2][1] = 6
+                    movements[2][1] = 6
                 elif prompt == "root" and editing == "password":
-                    data[pos_to_data[possible_moving_pos[current_pos + 1][0]]] += " (default)"
+                    data[pos_to_data[movements[current_pos + 1][0]]] += " (default)"
                     colors[2 - current_pos] = curses.color_pair(6)
-                    possible_moving_pos[1][1] = 10
+                    movements[1][1] = 10
                 else:
                     colors[2 - current_pos] = curses.color_pair(5) | curses.A_ITALIC
 
-
-            reset_line(stdscr, possible_moving_pos[current_pos + 1][0], 0)
-            reset_line(stdscr, possible_moving_pos[current_pos][0], 0)
+            reset_line(stdscr, movements[current_pos + 1][0], 0)
+            reset_line(stdscr, movements[current_pos][0], 0)
 
         elif ch in (curses.KEY_ENTER, 10, 13):
             # Set default values if fields are empty
@@ -213,12 +231,18 @@ def setup_my_sql(stdscr):
 
             if not (1 <= int(data["port"]) <= 65535):
                 reset_line(stdscr, 7, 0)
-                stdscr.addstr(7, 0, "[!] Invalid port", curses.color_pair(3))
+                addstr(stdscr, 7, 0, "[!] Invalid port", curses.color_pair(3))
 
             elif len(data["username"]) > 32:
                 reset_line(stdscr, 7, 0)
-                stdscr.addstr(7, 0, "[!] Username cannot be greater than 32 characters", curses.color_pair(3))
-            
+                addstr(
+                    stdscr,
+                    7,
+                    0,
+                    "[!] Username cannot be greater than 32 characters",
+                    curses.color_pair(3),
+                )
+
             else:
                 #* Verify connection
                 import mysql.connector
@@ -228,46 +252,64 @@ def setup_my_sql(stdscr):
                         host=data["host"],
                         port=data["port"],
                         user=data["username"],
-                        password=data["password"]
+                        password=data["password"],
                     )
                     connection.close()
                     reset_line(stdscr, 7, 0)
-                    stdscr.addstr(7, 0, "[\u2713] Connection successful!", curses.color_pair(2))
-                    stdscr.addstr(8, 0, "Press any key to continue...")
-                    stdscr.getch()
+                    addstr(
+                        stdscr,
+                        7,
+                        0,
+                        "[\u2713] Connection successful!",
+                        curses.color_pair(2),
+                    )
+                    addstr(stdscr, 8, 0, "Press any key to continue...")
+                    getch(stdscr)
                     break
 
                 except mysql.connector.Error:
                     reset_line(stdscr, 7, 0)
-                    stdscr.addstr(7, 0, f"[!] Connection with MySQL server failed", curses.color_pair(3))
+                    addstr(
+                        stdscr,
+                        7,
+                        0,
+                        f"[!] Connection with MySQL server failed",
+                        curses.color_pair(3),
+                    )
+
+            getch(stdscr)
 
         else:
             #* Edit mode
-            editing = pos_to_data[possible_moving_pos[current_pos][0]]
+            editing = pos_to_data[movements[current_pos][0]]
 
             def handle_key_press(allowable_characters):
                 if chr(ch) in allowable_characters:
                     data[editing] += chr(ch)
-                    possible_moving_pos[current_pos][1] += 1
+                    movements[current_pos][1] += 1
 
                 elif ch in (curses.KEY_BACKSPACE, 127, 8):
                     if data[editing]:
                         data[editing] = data[editing][:-1]
-                        possible_moving_pos[current_pos][1] -= 1
+                        movements[current_pos][1] -= 1
 
             if editing == "password":
                 handle_key_press("".join(chr(i) for i in range(32, 127)))
 
             elif editing == "username":
-                handle_key_press("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$@.-")
+                handle_key_press(
+                    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$@.-"
+                )
 
             elif editing == "port":
                 handle_key_press("0123456789")
 
             elif editing == "host":
-                handle_key_press("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._")
+                handle_key_press(
+                    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._"
+                )
 
-            reset_line(stdscr, possible_moving_pos[current_pos][0], 0)
+            reset_line(stdscr, movements[current_pos][0], 0)
 
     from pickle import dump, load
     from os import makedirs, path, urandom
@@ -303,12 +345,13 @@ def setup_my_sql(stdscr):
     # decrypted_password = fernet.decrypt(encrypted).decode()
 
     from scripts.user import choose_username
+
     choose_username(stdscr)
 
 
 def enter_vault(stdscr):
     #! Clear the terminal
     stdscr.clear()
-    stdscr.addstr("Entering vault...\n", curses.A_BOLD)
+    addstr(stdscr, 0, 0, "Entering vault...\n", curses.A_BOLD)
     stdscr.refresh()
-    stdscr.getch()  #* Wait for user to press a key before proceeding
+    getch(stdscr)  #* Wait for user to press a key before proceeding
