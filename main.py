@@ -15,6 +15,7 @@ def main(stdscr):
 
         curses.init_pair(5, curses.COLOR_WHITE, curses.COLOR_BLACK)
         curses.init_pair(6, 8, curses.COLOR_BLACK) #*  gray
+        curses.init_pair(7, curses.COLOR_BLACK, curses.COLOR_WHITE)
     else:
         stdscr.clear()
         exception_handler(
