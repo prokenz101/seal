@@ -1,6 +1,28 @@
 import curses
 
 
+def setup_colors(stdscr):
+    from scripts.utils import rgb_to_curses_color, exception_handler
+    curses.start_color()
+
+    if curses.can_change_color():
+        curses.init_pair(1, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+        curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_BLACK)
+        curses.init_pair(3, curses.COLOR_RED, curses.COLOR_BLACK)
+
+        curses.init_color(11, *rgb_to_curses_color(125, 229, 255)) #* teal
+        curses.init_pair(4, 11, curses.COLOR_BLACK)
+
+        curses.init_pair(5, curses.COLOR_WHITE, curses.COLOR_BLACK)
+        curses.init_pair(6, 8, curses.COLOR_BLACK) #* gray
+        curses.init_pair(7, curses.COLOR_BLACK, curses.COLOR_WHITE)
+    else:
+        stdscr.clear()
+        exception_handler(
+            message="\033[96mYour terminal does not support colored text.\033[0m"
+        )
+
+
 def exit_curses(stdscr):
     #* Exit the program and restore terminal settings
     curses.nocbreak()

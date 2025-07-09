@@ -14,6 +14,24 @@ def rgb_to_curses_color(r, g, b):
     return int(r * 1000 / 255), int(g * 1000 / 255), int(b * 1000 / 255)
 
 
+def accounts_exist():
+    from os import path, listdir
+    from re import compile
+
+    if path.exists("salts"):
+        salts_dir_files = listdir("salts")
+        if any(f.endswith(".dat") for f in salts_dir_files):
+            hash_pattern = compile(r"[A-Fa-f0-9]{64}")
+            if any(hash_pattern.search(f) for f in salts_dir_files):
+                return True
+            else:
+                exception_handler(
+                    message="Invalid account hash found in \033[96m'salts'\033[0m directory."
+                )
+    else:
+        return False
+
+
 def is_all_modules_installed():
     modules = {"windows_curses": False, "cryptography": False, "mysql.connector": False}
     #* Testing if individual modules are installed

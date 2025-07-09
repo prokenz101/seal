@@ -1,84 +1,51 @@
-from scripts.utils import (
-    exception_handler,
-    rgb_to_curses_color,
-    is_all_modules_installed,
-)
-
-
 def main(stdscr):
-   #* Set up color pairs for colorful text
-    curses.start_color()
+    #* Start SEAL
+    from scripts.curses_utils import setup_colors
+    setup_colors(stdscr)
 
-    if curses.can_change_color():
-        curses.init_pair(1, curses.COLOR_YELLOW, curses.COLOR_BLACK)
-        curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_BLACK)
-        curses.init_pair(3, curses.COLOR_RED, curses.COLOR_BLACK)
+    from scripts.menu import first_time_launch, normal_launch
 
-        curses.init_color(11, *rgb_to_curses_color(125, 229, 255)) #* teal
-        curses.init_pair(4, 11, curses.COLOR_BLACK)
-
-        curses.init_pair(5, curses.COLOR_WHITE, curses.COLOR_BLACK)
-        curses.init_pair(6, 8, curses.COLOR_BLACK) #* gray
-        curses.init_pair(7, curses.COLOR_BLACK, curses.COLOR_WHITE)
+    if accounts_exist():
+        normal_launch(stdscr)
     else:
-        stdscr.clear()
-        exception_handler(
-            message="\033[96mYour terminal does not support colored text.\033[0m"
-        )
+        first_time_launch(stdscr)
 
-   #* Start SEAL
+    
+try:
+    from sys import modules
+    from os import path, system
+    from scripts.utils import exception_handler, is_all_modules_installed, accounts_exist
 
-    try:
-        # from scripts.encryption import encrypt, decrypt
-        from re import compile
-        from os import path, listdir
-        from scripts.menu import first_time_launch, normal_launch
+    if "idlelib.run" in modules:
+        #! Program runs itself in a terminal if it is run in IDLE
+        #! This is because IDLE does not support curses, or colored text
+        script = path.abspath(__file__) #* Path of main.py
+        system(f'start "" py "{script}"')
 
-       #* Check if an account exists
+    if is_all_modules_installed():
+        import curses
+        from scripts.curses_utils import exit_curses
 
-        if path.exists("salts"):
-            salts_dir_files = listdir("salts")
-            if any(f.endswith(".dat") for f in salts_dir_files):
-                hash_pattern = compile(r"[A-Fa-f0-9]{64}")
-                if any(hash_pattern.search(f) for f in salts_dir_files):
-                    normal_launch(stdscr)
-                else:
-                    exception_handler(
-                        message="Invalid account hash found in \033[96m'salts'\033[0m directory."
-                    )
-        else:
-            first_time_launch(stdscr)
+        stdscr = curses.initscr() #* Initialize the curses
+        curses.noecho() #* Hides user inputs
+        curses.cbreak() #* React to keys instantly
+        stdscr.keypad(True) #* Enable the keypad keys
 
-    except ModuleNotFoundError as e:
-        missing_file = str(e).split("'")[1].split(".")[1]
-        exception_handler(
-            message=f"\033[96mMissing required file '\033[92mscripts/{missing_file}.py\033[96m'. Please restore or re-download it.\033[0m",
-            Exception=e,
-        )
-    except curses.error:
-        print("\033[91m\033[1m[Fatal Error]\033[0m")
-        print("Terminal window is too small to display text.")
-    except Exception as e:
-        exception_handler(Exception=e)
+        try:
+            curses.wrapper(main)
+        except curses.error:
+            exception_handler("Terminal window is too small to display text.")
+        exit_curses(stdscr)
 
-
-from sys import modules
-from os import path, system
-
-if "idlelib.run" in modules:
-    #! Program runs itself in a terminal if it is run in IDLE
-    #! This is because IDLE does not support curses, or colored text
-    script = path.abspath(__file__) #* Path of main.py
-    system(f'start "" py "{script}"')
-
-if is_all_modules_installed():
-    import curses
-    from scripts.curses_utils import exit_curses
-
-    stdscr = curses.initscr() #* Initialize the curses
-    curses.noecho() #* Hides user inputs
-    curses.cbreak() #* React to keys instantly
-    stdscr.keypad(True) #* Enable the keypad keys
-
-    curses.wrapper(main)
-    exit_curses(stdscr)
+except ModuleNotFoundError as e:
+    missing_file = str(e).split("'")[1].split(".")[1]
+    print(
+        f"\033[96mMissing required file '\033[92mscripts/{missing_file}.py\033[96m'. Please restore or re-download it.\033[0m"
+    )
+except KeyboardInterrupt:
+    print("\033[91m\033[1mExiting...\033[0m")
+    print("Program interrupted by user.")
+except Exception as e:
+    print("\033[91m\033[1m[Fatal Error]\033[0m")
+    print("Something went wrong.")
+    print(e)
