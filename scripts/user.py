@@ -2,7 +2,7 @@
 #* For handling the master password
 
 import curses
-from scripts.curses_utils import getch, addstr, move
+from scripts.curses_utils import getch, addstr, move, reset_line
 
 
 def choose_username(stdscr) -> tuple[str, str]:
@@ -10,10 +10,10 @@ def choose_username(stdscr) -> tuple[str, str]:
     stdscr.clear()
 
     username = ""
-    addstr(stdscr, 0, 0, "Create username:\n", curses.A_BOLD)
     requirements = {"length": False, "alphanumeric_lowercase": False}
 
     while True:
+        addstr(stdscr, 0, 0, "Create username:\n", curses.A_BOLD)
         addstr(stdscr, 1, 0, "Requirements:\n")
         allow_typing = True
 
@@ -107,11 +107,11 @@ def choose_master_password(stdscr, username: str) -> tuple[str, str]:
     stdscr.clear()
 
     master_password = ""
-    addstr(stdscr, 0, 0, "Create master password:\n", curses.A_BOLD)
     requirements = {"len": False, "upperlower": False, "digit": False, "special": False}
     show_password = False
 
     while True:
+        addstr(stdscr, 0, 0, "Create master password:\n", curses.A_BOLD)
         addstr(stdscr, 1, 0, "Requirements:\n")
         allow_typing = True
 
@@ -211,10 +211,10 @@ def choose_master_password(stdscr, username: str) -> tuple[str, str]:
         stdscr.clrtoeol()  #* Adds a new line
 
         if show_password:
-            addstr(stdscr, 7, 0, "Press 'Tab' to hide password\n")
+            addstr(stdscr, 7, 0, "Press 'Tab' to hide password")
             addstr(stdscr, 8, 0, "Password: " + master_password + " ")
         else:
-            addstr(stdscr, 7, 0, "Press 'Tab' to show password\n")
+            addstr(stdscr, 7, 0, "Press 'Tab' to show password")
             addstr(stdscr, 8, 0, "Password: " + "*" * len(master_password) + " ")
         move(stdscr, 8, 10 + len(master_password))  #* Move cursor to end of password
         stdscr.refresh()
@@ -226,8 +226,39 @@ def choose_master_password(stdscr, username: str) -> tuple[str, str]:
         #* If Enter is pressed and requirement is met, exit loop
         if ch in (curses.KEY_ENTER, 10, 13):
             if all(requirements.values()):
-                break
+                #* Confirm password segment
 
+                reset_line(stdscr, 7, 0)
+                addstr(stdscr, 7, 0, "Password hidden", curses.color_pair(6))
+                reset_line(stdscr, 8, 0)
+                addstr(stdscr, 8, 0, "Password: " + "*" * len(master_password) + " ")
+
+                confirm_password = ""
+                while True:
+                    addstr(stdscr, 10, 0, "Confirm password: " + "*" * len(confirm_password) + " ")
+                    move(stdscr, 10, 18 + len(confirm_password))  #* Move cursor to end of confirm password
+                    stdscr.refresh()
+                    confirm_ch = getch(stdscr)  #* Get user key press for confirm password
+                    if confirm_ch == curses.KEY_RESIZE:
+                        continue
+
+                    #* Handle backspace
+                    if confirm_ch in (curses.KEY_BACKSPACE, 127, 8):
+                        confirm_password = confirm_password[:-1]
+
+                    elif confirm_ch in (curses.KEY_ENTER, 10, 13):
+                        if confirm_password == master_password:
+                            break
+                        else:
+                            addstr(stdscr, 11, 0, "Passwords do not match! Try again.\n", curses.color_pair(1))
+                            reset_line(stdscr, 10, 0)
+                            confirm_password = ""
+
+                    #* Accepts printable ASCII characters, except for [\, ", '], so long as the user is allowed to type
+                    elif (32 <= confirm_ch <= 126) and (confirm_ch not in [92, 39, 34]):
+                        confirm_password += chr(confirm_ch)
+
+                break
         #* Toggle show/hide password on Tab key press
         elif ch == 9:
             show_password = not show_password
