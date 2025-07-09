@@ -1,4 +1,5 @@
 import curses
+from os import rmdir
 from scripts.curses_utils import reset_line, getch, move, addstr, footer
 
 
@@ -48,7 +49,8 @@ def first_time_launch(stdscr):
     move(stdscr, 0, 0)
     if colors[0] == curses.color_pair(7) | curses.A_UNDERLINE:
         setup_my_sql(stdscr)
-
+        from scripts.user import choose_username
+        choose_username(stdscr)
     else:
         #! Exiting...
         pass
@@ -58,8 +60,7 @@ def normal_launch(stdscr):
     #! Clear the terminal
     stdscr.clear()
 
-    colors = [curses.color_pair(5), curses.color_pair(5)]
-    prompt = ""
+    colors = [curses.color_pair(7) | curses.A_UNDERLINE, curses.color_pair(5), curses.color_pair(5)]
 
     while True:
         move(stdscr, 0, 0)
@@ -70,48 +71,47 @@ def normal_launch(stdscr):
         addstr(stdscr, 4, 0, "╚════██║██╔══╝  ██╔══██║██║     ", curses.color_pair(4))
         addstr(stdscr, 5, 0, "███████║███████╗██║  ██║███████╗", curses.color_pair(4))
         addstr(stdscr, 6, 0, "╚══════╝╚══════╝╚═╝  ╚═╝╚══════╝", curses.color_pair(4))
-
         move(stdscr, 7, 0)
         stdscr.clrtoeol()
-        move(stdscr, 8, 0)
+        addstr(stdscr, 8, 0, "Choose an option:")
+        move(stdscr, 9, 0)
         stdscr.clrtoeol()
+        addstr(stdscr, 10, 2, "Log in", colors[0])
+        addstr(stdscr, 10, 11, "MySQL Setup", colors[1])
+        addstr(stdscr, 10, 25, "Exit", colors[2])
+        footer(
+            stdscr, "Use [◀] and [▶] arrow keys to navigate, and [Enter] to confirm."
+        )
 
-        addstr(stdscr, 9, 0, "Choose an option:")
-        addstr(stdscr, 10, 0, "1. Log in", colors[0])
-        addstr(stdscr, 11, 0, "2. Exit", colors[1])
-
-        move(stdscr, 12, 0)
-        stdscr.clrtoeol()
-
-        addstr(stdscr, 13, 0, ">")
-        move(stdscr, 13, 2)
-        addstr(stdscr, 13, 1, " " + prompt + " ")
-        move(stdscr, 13, 2 + len(prompt))  #* Move cursor to end of prompt
-        stdscr.refresh()
-
-        ch = getch(stdscr)
+        ch = getch(stdscr)  #* Wait for user key press
         if ch == curses.KEY_RESIZE:
             continue
 
+        if ch == curses.KEY_RIGHT:
+            index = colors.index(curses.color_pair(7) | curses.A_UNDERLINE)
+            if index < 2:
+                colors[index] = curses.color_pair(5)
+                colors[index + 1] = curses.color_pair(7) | curses.A_UNDERLINE
+        elif ch == curses.KEY_LEFT:
+            index = colors.index(curses.color_pair(7) | curses.A_UNDERLINE)
+            if index > 0:
+                colors[index] = curses.color_pair(5)
+                colors[index - 1] = curses.color_pair(7) | curses.A_UNDERLINE
+
         #* If Enter is pressed and requirement is met, exit loop
-        if (ch in (curses.KEY_ENTER, 10, 13)) and (prompt == "1" or prompt == "2"):
+        elif ch in (curses.KEY_ENTER, 10, 13):
             break
 
-        #* Handle backspace
-        elif ch in (curses.KEY_BACKSPACE, 127, 8):
-            colors = [curses.color_pair(5), curses.color_pair(5)]
-            prompt = ""
-
-        #* Accepts only numbers and lowercase letters, so long as the user is allowed to type
-        elif ch == ord("1") or ch == ord("2"):
-            prompt = chr(ch)
-            colors = [curses.color_pair(5), curses.color_pair(5)]
-            colors[int(prompt) - 1] = curses.color_pair(4)
-
     stdscr.clear()
-    if prompt == "1":
+    curses.curs_set(1)
+    move(stdscr, 0, 0)
+    if colors[0] == curses.color_pair(7) | curses.A_UNDERLINE:
         enter_vault(stdscr)
-    elif prompt == "2":
+    elif colors[1] == curses.color_pair(7) | curses.A_UNDERLINE:
+        setup_my_sql(stdscr)
+        normal_launch(stdscr)
+    else:
+        #! Exiting...
         pass
 
 
