@@ -313,6 +313,7 @@ def setup_my_sql(stdscr):
 
     from pickle import dump, load
     from os import makedirs, path, urandom
+    from shutil import rmtree
     from scripts.encryption import get_fernet_key
 
     sql_server_password = data["password"]
@@ -320,7 +321,10 @@ def setup_my_sql(stdscr):
     server_password_file = "appdata/mysql_config.seal"
     app_master_password = "seal_app_encryption_secret"
 
-    makedirs("appdata", exist_ok=True)
+    appdata_dir = "appdata"
+    if path.exists(appdata_dir):
+        rmtree(appdata_dir)
+    makedirs(appdata_dir, exist_ok=True)
 
     if not path.exists(app_salt_file):
         salt = urandom(16)
@@ -343,10 +347,6 @@ def setup_my_sql(stdscr):
     # with open(server_password_file, "rb") as f:
     #     encrypted = load(f)
     # decrypted_password = fernet.decrypt(encrypted).decode()
-
-    from scripts.user import choose_username
-
-    choose_username(stdscr)
 
 
 def enter_vault(stdscr):
