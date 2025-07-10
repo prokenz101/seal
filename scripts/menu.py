@@ -341,13 +341,18 @@ def setup_my_sql(stdscr):
 
     fernet = get_fernet_key(app_master_password, app_salt_file)
 
-    #* Encrypt SQL password
-    encrypted_sql_password = fernet.encrypt(sql_server_password.encode())
+    #* Encrypted SQL data
+    encrypted_sql_data = [
+        fernet.encrypt(data["host"].encode()),
+        fernet.encrypt(data["port"].encode()),
+        fernet.encrypt(data["username"].encode()),
+        fernet.encrypt(data["password"].encode())
+    ]
 
-    #* Save encrypted password
-    with open(server_password_file, "wb") as f:
-        dump(encrypted_sql_password, f)
-
+    #* Save encrypted data
+    with open("appdata/seal_core.csv", "w", newline="") as f:
+        writer = writer(f)
+        writer.writerow(encrypted_sql_data)
 
 
 def enter_vault(stdscr):

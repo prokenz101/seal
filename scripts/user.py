@@ -279,7 +279,14 @@ def choose_master_password(stdscr, username: str) -> None:
     addstr(stdscr, 0, 0, "Password set successfully!", curses.A_BOLD)
     getch(stdscr)
 
-    return username, master_password
+    with open("appdata/seal_core.csv", "a", newline="") as f:
+        from csv import writer
+        from hashlib import sha256
+
+        writer = writer(f)
+        username_hash = sha256(username.encode()).hexdigest()
+        password_hash = sha256(master_password.encode()).hexdigest()
+        writer.writerow([username_hash, password_hash])
 
 
 def create_salt(username: str) -> None:
