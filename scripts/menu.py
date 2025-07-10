@@ -111,7 +111,7 @@ def normal_launch(stdscr):
     curses.curs_set(1)
     move(stdscr, 0, 0)
     if colors[0] == curses.color_pair(7) | curses.A_UNDERLINE:
-        enter_vault(stdscr)
+        log_in(stdscr)
     elif colors[1] == curses.color_pair(7) | curses.A_UNDERLINE:
         setup_my_sql(stdscr)
         normal_launch(stdscr)
@@ -316,14 +316,13 @@ def setup_my_sql(stdscr):
 
             reset_line(stdscr, movements[current_pos][0], 0)
 
-    from pickle import dump, load
+    from pickle import dump
     from os import makedirs, path, urandom
     from shutil import rmtree
     from scripts.encryption import get_fernet_key
+    from csv import writer
 
-    sql_server_password = data["password"]
     app_salt_file = "appdata/app_salt.dat"
-    server_password_file = "appdata/mysql_config.seal"
     app_master_password = "seal_app_encryption_secret"
 
     appdata_dir = "appdata"
@@ -351,9 +350,118 @@ def setup_my_sql(stdscr):
         writer.writerow(encrypted_sql_data)
 
 
-def enter_vault(stdscr):
+def log_in(stdscr):
     #! Clear the terminal
     stdscr.clear()
-    addstr(stdscr, 0, 0, "Entering vault...\n", curses.A_BOLD)
-    stdscr.refresh()
-    getch(stdscr)  #* Wait for user to press a key before proceeding
+    username = ""
+    password = ""
+    show_password = False
+    movements = [[2, 10], [5, 10]]
+    current_pos = 0
+    pos_to_data = {0: "username", 1: "password"}
+
+    from csv import reader
+    with open("appdata/seal_core.csv", "r") as f:
+        reader = list(reader(f))
+
+    while True:
+        addstr(stdscr, 0, 0, "Log in", curses.A_BOLD)
+        move(stdscr, 1, 0)
+        stdscr.clrtoeol()
+        footer(
+            stdscr,
+            "Use [▲] and [▼] arrow keys to navigate, and [Enter] to confirm.",
+        )
+
+        addstr(stdscr, 2, 0, f"Username: {username}")
+        move(stdscr, 3, 0)
+        stdscr.clrtoeol()
+
+        if show_password:
+            addstr(stdscr, 4, 0, "Press [F2] to hide password", curses.color_pair(6))
+            addstr(stdscr, 5, 0, f"Password: {password}")
+        else:
+            addstr(stdscr, 4, 0, "Press [F2] to show password", curses.color_pair(6))
+            addstr(
+                stdscr, 5, 0, f"Password: {"*" * len(password)}"
+            )
+
+        move(stdscr, *movements[current_pos])
+        ch = getch(stdscr)
+        if ch == curses.KEY_RESIZE:
+            continue
+
+        if ch == curses.KEY_F2: #* F2 key
+            show_password = not show_password
+
+        elif ch == curses.KEY_UP or ch == 353: #* 353 is Shift+Tab in curses
+            if current_pos > 0:
+                current_pos -= 1
+                reset_line(stdscr, movements[current_pos + 1][0], 0)
+                reset_line(stdscr, movements[current_pos][0], 0)
+
+        elif ch == curses.KEY_DOWN or ch == 9:
+            if current_pos < 1:
+                current_pos += 1
+                reset_line(stdscr, movements[current_pos - 1][0], 0)
+                reset_line(stdscr, movements[current_pos][0], 0)
+
+        elif ch in (curses.KEY_ENTER, 10, 13):
+            from hashlib import sha256
+
+            skip = True
+            username_hash = sha256(username.encode()).hexdigest()
+            password_hash = sha256(password.encode()).hexdigest()
+
+            for row in reader:
+                if skip:
+                    skip = False
+                    continue
+
+                if row[0] == username_hash and row[1] == password_hash:
+                    #* Successful login
+                    reset_line(stdscr, 7, 0)
+                    addstr(
+                        stdscr,
+                        7,
+                        0,
+                        "Welcome back, " + username,
+                        curses.color_pair(2),
+                    )
+                    addstr(stdscr, 8, 0, "Press any key to continue...")
+                    getch(stdscr)
+                    break
+            else:
+                #* Failed login
+                addstr(stdscr, 7, 0, "Invalid username or password", curses.color_pair(3))
+                getch(stdscr)
+                continue
+
+            break
+
+        else:
+            #* Edit mode
+            editing = pos_to_data[current_pos]
+            if editing == "username":
+                if 32 <= ch <= 126: #* Printable ASCII characters
+                    username += chr(ch)
+                    movements[current_pos][1] += 1
+                elif ch in (curses.KEY_BACKSPACE, 127, 8):
+                    if username:
+                        username = username[:-1]
+                        movements[current_pos][1] -= 1
+
+            elif editing == "password":
+                if (32 <= ch <= 126) and (ch not in [92, 39, 34]):
+                    password += chr(ch)
+                    movements[current_pos][1] += 1
+                elif ch in (curses.KEY_BACKSPACE, 127, 8):
+                    if password:
+                        password = password[:-1]
+                        movements[current_pos][1] -= 1
+
+            reset_line(stdscr, movements[current_pos][0], 0)
+
+    #* Enter vault
+    #TODO: Remove this clear when enter vault is implemented
+    stdscr.clear()
