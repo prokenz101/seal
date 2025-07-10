@@ -5,7 +5,7 @@ import curses
 from scripts.curses_utils import getch, addstr, move, reset_line
 
 
-def choose_username(stdscr) -> tuple[str, str]:
+def choose_username(stdscr) -> None:
     #! Clear the terminal
     stdscr.clear()
 
@@ -13,8 +13,8 @@ def choose_username(stdscr) -> tuple[str, str]:
     requirements = {"length": False, "alphanumeric_lowercase": False}
 
     while True:
-        addstr(stdscr, 0, 0, "Create username:\n", curses.A_BOLD)
-        addstr(stdscr, 1, 0, "Requirements:\n")
+        addstr(stdscr, 0, 0, "Create username", curses.A_BOLD)
+        addstr(stdscr, 1, 0, "Requirements:")
         allow_typing = True
 
         #* Check if username meets length requirement
@@ -23,7 +23,7 @@ def choose_username(stdscr) -> tuple[str, str]:
                 stdscr,
                 2,
                 0,
-                "[X] Requires at least 3 characters\n",
+                "[X] Requires at least 3 characters",
                 curses.color_pair(1),
             )
             requirements["length"] = False
@@ -32,7 +32,7 @@ def choose_username(stdscr) -> tuple[str, str]:
                 stdscr,
                 2,
                 0,
-                "[!] Cannot be greater than 16 characters\n",
+                "[!] Cannot be greater than 16 characters",
                 curses.color_pair(3),
             )
             requirements["length"] = False
@@ -42,7 +42,7 @@ def choose_username(stdscr) -> tuple[str, str]:
                 stdscr,
                 2,
                 0,
-                "[\u2713] Requires at least 3 characters\n",
+                "[\u2713] Requires at least 3 characters",
                 curses.color_pair(2),
             )
             requirements["length"] = True
@@ -53,7 +53,7 @@ def choose_username(stdscr) -> tuple[str, str]:
                 stdscr,
                 3,
                 0,
-                "[!] Only lowercase letters and numbers are allowed\n",
+                "[!] Only lowercase letters and numbers are allowed",
                 curses.color_pair(3),
             )
             allow_typing = False
@@ -63,7 +63,7 @@ def choose_username(stdscr) -> tuple[str, str]:
                 stdscr,
                 3,
                 0,
-                "[-] Only lowercase letters and numbers are allowed\n",
+                "[-] Only lowercase letters and numbers are allowed",
                 curses.color_pair(4),
             )
             requirements["alphanumeric_lowercase"] = True
@@ -97,12 +97,12 @@ def choose_username(stdscr) -> tuple[str, str]:
 
     stdscr.clear()
     stdscr.refresh()
-    addstr(stdscr, 0, 0, "Username set successfully!\n", curses.A_BOLD)
+    addstr(stdscr, 0, 0, "Username set successfully!", curses.A_BOLD)
     getch(stdscr)
-    return choose_master_password(stdscr, username)
+    choose_master_password(stdscr, username)
 
 
-def choose_master_password(stdscr, username: str) -> tuple[str, str]:
+def choose_master_password(stdscr, username: str) -> None:
     #! Clear the terminal
     stdscr.clear()
 
@@ -111,8 +111,8 @@ def choose_master_password(stdscr, username: str) -> tuple[str, str]:
     show_password = False
 
     while True:
-        addstr(stdscr, 0, 0, "Create master password:\n", curses.A_BOLD)
-        addstr(stdscr, 1, 0, "Requirements:\n")
+        addstr(stdscr, 0, 0, "Create master password", curses.A_BOLD)
+        addstr(stdscr, 1, 0, "Requirements:")
         allow_typing = True
 
         #* Check if password meets length requirement
@@ -121,7 +121,7 @@ def choose_master_password(stdscr, username: str) -> tuple[str, str]:
                 stdscr,
                 2,
                 0,
-                "[\u2713] Requires at least 12 characters\n",
+                "[\u2713] Requires at least 12 characters",
                 curses.color_pair(2),
             )
             requirements["len"] = True
@@ -130,7 +130,7 @@ def choose_master_password(stdscr, username: str) -> tuple[str, str]:
                 stdscr,
                 2,
                 0,
-                "[!] Cannot be greater than 64 characters\n",
+                "[!] Cannot be greater than 64 characters",
                 curses.color_pair(3),
             )
             requirements["len"] = False
@@ -140,7 +140,7 @@ def choose_master_password(stdscr, username: str) -> tuple[str, str]:
                 stdscr,
                 2,
                 0,
-                "[X] Requires at least 12 characters\n",
+                "[X] Requires at least 12 characters",
                 curses.color_pair(1),
             )
             requirements["len"] = False
@@ -153,7 +153,7 @@ def choose_master_password(stdscr, username: str) -> tuple[str, str]:
                 stdscr,
                 3,
                 0,
-                "[\u2713] Requires at least one uppercase and one lowercase letter\n",
+                "[\u2713] Requires at least one uppercase and one lowercase letter",
                 curses.color_pair(2),
             )
             requirements["upperlower"] = True
@@ -162,7 +162,7 @@ def choose_master_password(stdscr, username: str) -> tuple[str, str]:
                 stdscr,
                 3,
                 0,
-                "[X] Requires at least one uppercase and one lowercase letter\n",
+                "[X] Requires at least one uppercase and one lowercase letter",
                 curses.color_pair(1),
             )
             requirements["upperlower"] = False
@@ -173,7 +173,7 @@ def choose_master_password(stdscr, username: str) -> tuple[str, str]:
                 stdscr,
                 4,
                 0,
-                "[\u2713] Requires at least one numerical digit\n",
+                "[\u2713] Requires at least one numerical digit",
                 curses.color_pair(2),
             )
             requirements["digit"] = True
@@ -182,7 +182,7 @@ def choose_master_password(stdscr, username: str) -> tuple[str, str]:
                 stdscr,
                 4,
                 0,
-                "[X] Requires at least one numerical digit\n",
+                "[X] Requires at least one numerical digit",
                 curses.color_pair(1),
             )
             requirements["digit"] = False
@@ -193,7 +193,7 @@ def choose_master_password(stdscr, username: str) -> tuple[str, str]:
                 stdscr,
                 5,
                 0,
-                "[\u2713] Requires at least one special character\n",
+                "[\u2713] Requires at least one special character",
                 curses.color_pair(2),
             )
             requirements["special"] = True
@@ -202,7 +202,7 @@ def choose_master_password(stdscr, username: str) -> tuple[str, str]:
                 stdscr,
                 5,
                 0,
-                "[X] Requires at least one special character\n",
+                "[X] Requires at least one special character",
                 curses.color_pair(1),
             )
             requirements["special"] = False
@@ -211,10 +211,10 @@ def choose_master_password(stdscr, username: str) -> tuple[str, str]:
         stdscr.clrtoeol()  #* Adds a new line
 
         if show_password:
-            addstr(stdscr, 7, 0, "Press 'Tab' to hide password")
+            addstr(stdscr, 7, 0, "Press [F2] to hide password", curses.color_pair(6))
             addstr(stdscr, 8, 0, "Password: " + master_password + " ")
         else:
-            addstr(stdscr, 7, 0, "Press 'Tab' to show password")
+            addstr(stdscr, 7, 0, "Press [F2] to show password", curses.color_pair(6))
             addstr(stdscr, 8, 0, "Password: " + "*" * len(master_password) + " ")
         move(stdscr, 8, 10 + len(master_password))  #* Move cursor to end of password
         stdscr.refresh()
@@ -250,7 +250,7 @@ def choose_master_password(stdscr, username: str) -> tuple[str, str]:
                         if confirm_password == master_password:
                             break
                         else:
-                            addstr(stdscr, 11, 0, "Passwords do not match! Try again.\n", curses.color_pair(1))
+                            addstr(stdscr, 11, 0, "Passwords do not match! Try again.", curses.color_pair(1))
                             reset_line(stdscr, 10, 0)
                             confirm_password = ""
 
@@ -259,8 +259,9 @@ def choose_master_password(stdscr, username: str) -> tuple[str, str]:
                         confirm_password += chr(confirm_ch)
 
                 break
-        #* Toggle show/hide password on Tab key press
-        elif ch == 9:
+
+        #* Toggle show/hide password on F2 key press
+        elif ch == curses.KEY_F2:
             show_password = not show_password
 
         #* Handle backspace
@@ -275,7 +276,7 @@ def choose_master_password(stdscr, username: str) -> tuple[str, str]:
 
     stdscr.clear()
     stdscr.refresh()
-    addstr(stdscr, 0, 0, "Password set successfully!\n", curses.A_BOLD)
+    addstr(stdscr, 0, 0, "Password set successfully!", curses.A_BOLD)
     getch(stdscr)
 
     return username, master_password

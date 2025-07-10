@@ -26,7 +26,7 @@ try:
         import curses
         from scripts.curses_utils import exit_curses
 
-        stdscr = curses.initscr() #* Initialize the curses
+        stdscr = curses.initscr() #* Initialize curses
         curses.noecho() #* Hides user inputs
         curses.cbreak() #* React to keys instantly
         stdscr.keypad(True) #* Enable the keypad keys

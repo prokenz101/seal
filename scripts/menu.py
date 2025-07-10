@@ -50,6 +50,7 @@ def first_time_launch(stdscr):
     if colors[0] == curses.color_pair(7) | curses.A_UNDERLINE:
         setup_my_sql(stdscr)
         from scripts.user import choose_username
+
         choose_username(stdscr)
     else:
         #! Exiting...
@@ -60,7 +61,11 @@ def normal_launch(stdscr):
     #! Clear the terminal
     stdscr.clear()
 
-    colors = [curses.color_pair(7) | curses.A_UNDERLINE, curses.color_pair(5), curses.color_pair(5)]
+    colors = [
+        curses.color_pair(7) | curses.A_UNDERLINE,
+        curses.color_pair(5),
+        curses.color_pair(5),
+    ]
 
     while True:
         move(stdscr, 0, 0)
@@ -132,7 +137,7 @@ def setup_my_sql(stdscr):
     pos_to_data = {2: "host", 3: "port", 4: "username", 5: "password"}
 
     while True:
-        addstr(stdscr, 0, 0, "Set up MySQL connection:", curses.A_BOLD)
+        addstr(stdscr, 0, 0, "Set up MySQL connection", curses.A_BOLD)
         move(stdscr, 1, 0)
         stdscr.clrtoeol()
         footer(
@@ -343,10 +348,6 @@ def setup_my_sql(stdscr):
     with open(server_password_file, "wb") as f:
         dump(encrypted_sql_password, f)
 
-    #* To decrypt later
-    # with open(server_password_file, "rb") as f:
-    #     encrypted = load(f)
-    # decrypted_password = fernet.decrypt(encrypted).decode()
 
 
 def enter_vault(stdscr):
