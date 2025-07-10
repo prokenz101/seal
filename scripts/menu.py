@@ -185,7 +185,7 @@ def setup_my_sql(stdscr):
             reset_line(stdscr, movements[current_pos - 1][0], 0)
             reset_line(stdscr, movements[current_pos][0], 0)
 
-        elif ch == curses.KEY_DOWN and current_pos > 0:
+        elif (ch == curses.KEY_DOWN or ch == 9) and current_pos > 0:
             current_pos -= 1
             editing = pos_to_data[movements[current_pos][0]]
             if current_pos > 0:
