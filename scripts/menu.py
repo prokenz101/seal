@@ -331,13 +331,9 @@ def setup_my_sql(stdscr):
         rmtree(appdata_dir)
     makedirs(appdata_dir, exist_ok=True)
 
-    if not path.exists(app_salt_file):
-        salt = urandom(16)
-        with open(app_salt_file, "wb") as f:
-            dump(salt, f)  #* Creating a salt for the global app master password
-    else:
-        with open(app_salt_file, "rb") as f:
-            salt = load(f)
+    salt = urandom(16)
+    with open(app_salt_file, "wb") as f:
+        dump(salt, f)  #* Creating a salt for the global app master password
 
     fernet = get_fernet_key(app_master_password, app_salt_file)
 
