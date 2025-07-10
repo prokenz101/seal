@@ -47,5 +47,5 @@ except KeyboardInterrupt:
     print("Program interrupted by user.")
 except Exception as e:
     print("\033[91m\033[1m[Fatal Error]\033[0m")
-    print("Something went wrong.")
+    print("Something went wrong.\n")
     print(e)
