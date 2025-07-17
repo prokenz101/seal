@@ -377,7 +377,7 @@ def log_in(stdscr):
         else:
             addstr(stdscr, 4, 0, "Press [F2] to show password", curses.color_pair(6))
             addstr(
-                stdscr, 5, 0, f"Password: {"*" * len(password)}"
+                stdscr, 5, 0, f"Password: {'*' * len(password)}"
             )
 
         move(stdscr, *movements[current_pos])

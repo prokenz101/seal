@@ -215,7 +215,7 @@ def choose_master_password(stdscr, username: str) -> None:
             addstr(stdscr, 8, 0, "Password: " + master_password + " ")
         else:
             addstr(stdscr, 7, 0, "Press [F2] to show password", curses.color_pair(6))
-            addstr(stdscr, 8, 0, "Password: " + "*" * len(master_password) + " ")
+            addstr(stdscr, 8, 0, f"Password: {'*' * len(master_password)} ")
         move(stdscr, 8, 10 + len(master_password))  #* Move cursor to end of password
         stdscr.refresh()
 
@@ -231,11 +231,11 @@ def choose_master_password(stdscr, username: str) -> None:
                 reset_line(stdscr, 7, 0)
                 addstr(stdscr, 7, 0, "Password hidden", curses.color_pair(6))
                 reset_line(stdscr, 8, 0)
-                addstr(stdscr, 8, 0, "Password: " + "*" * len(master_password) + " ")
+                addstr(stdscr, 8, 0, f"Password: {'*' * len(master_password)} ")
 
                 confirm_password = ""
                 while True:
-                    addstr(stdscr, 10, 0, "Confirm password: " + "*" * len(confirm_password) + " ")
+                    addstr(stdscr, 10, 0, f"Confirm password: {'*' * len(confirm_password)} ")
                     move(stdscr, 10, 18 + len(confirm_password))  #* Move cursor to end of confirm password
                     stdscr.refresh()
                     confirm_ch = getch(stdscr)  #* Get user key press for confirm password
