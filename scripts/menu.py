@@ -277,11 +277,9 @@ def setup_my_sql(stdscr):
                         stdscr,
                         7,
                         0,
-                        f"[!] Connection with MySQL server failed",
+                        f"[!] Connection with MySQL server failed.",
                         curses.color_pair(3),
                     )
-
-            getch(stdscr)
 
         else:
             #* Edit mode
@@ -411,7 +409,7 @@ def log_in(stdscr):
 
             for row in reader:
                 if skip:
-                    skip = False
+                    skip = False #* Skip the SQL row
                     continue
 
                 if row[0] == username_hash and row[1] == password_hash:
@@ -429,8 +427,8 @@ def log_in(stdscr):
                     break
             else:
                 #* Failed login
-                addstr(stdscr, 7, 0, "Invalid username or password", curses.color_pair(3))
-                getch(stdscr)
+                reset_line(stdscr, 7, 0)
+                addstr(stdscr, 7, 0, "Invalid username or password.", curses.color_pair(3))
                 continue
 
             break
