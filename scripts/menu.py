@@ -401,6 +401,19 @@ def log_in(stdscr):
                 reset_line(stdscr, movements[current_pos][0], 0)
 
         elif ch in (curses.KEY_ENTER, 10, 13):
+            msg = None
+            if username == "" and password == "":
+                msg = "Please type a valid username and password."
+            elif username == "":
+                msg = "Please type a valid username."
+            elif password == "":
+                msg = "Please type a valid password."
+
+            if msg:
+                reset_line(stdscr, 7, 0)
+                addstr(stdscr, 7, 0, msg, curses.color_pair(3))
+                continue
+
             from hashlib import sha256
 
             skip = True
