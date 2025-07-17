@@ -1,5 +1,4 @@
 import curses
-from os import rmdir
 from scripts.curses_utils import reset_line, getch, move, addstr, footer
 
 
@@ -317,8 +316,7 @@ def setup_my_sql(stdscr):
             reset_line(stdscr, movements[current_pos][0], 0)
 
     from pickle import dump
-    from os import makedirs, path, urandom
-    from shutil import rmtree
+    from os import makedirs, urandom
     from scripts.encryption import get_fernet_key
     from csv import writer
 
@@ -326,8 +324,6 @@ def setup_my_sql(stdscr):
     app_master_password = "seal_app_encryption_secret"
 
     appdata_dir = "appdata"
-    if path.exists(appdata_dir):
-        rmtree(appdata_dir)
     makedirs(appdata_dir, exist_ok=True)
 
     salt = urandom(16)
