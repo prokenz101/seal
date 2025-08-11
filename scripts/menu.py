@@ -1,5 +1,5 @@
 import curses
-from scripts.curses_utils import reset_line, getch, move, addstr, footer
+from scripts.cutils import reset_line, getch, move, addstr, footer
 
 
 def first_time_launch(stdscr):

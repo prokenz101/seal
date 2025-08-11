@@ -1,6 +1,6 @@
 def main(stdscr):
     #* Start SEAL
-    from scripts.curses_utils import setup_colors
+    from scripts.cutils import setup_colors
     setup_colors(stdscr)
 
     from scripts.menu import first_time_launch, normal_launch
@@ -24,7 +24,7 @@ try:
 
     if is_all_modules_installed():
         import curses
-        from scripts.curses_utils import exit_curses
+        from scripts.cutils import exit_curses
 
         stdscr = curses.initscr() #* Initialize curses
         curses.noecho() #* Hides user inputs

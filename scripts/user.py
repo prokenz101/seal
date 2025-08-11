@@ -2,7 +2,7 @@
 #* For handling the master password
 
 import curses
-from scripts.curses_utils import getch, addstr, move, reset_line
+from scripts.cutils import getch, addstr, move, reset_line
 
 
 def choose_username(stdscr) -> None:

@@ -1,5 +1,7 @@
 import curses
 
+#* cutils -> utilities involving curses module
+
 
 def setup_colors(stdscr):
     from scripts.utils import rgb_to_curses_color, exception_handler
