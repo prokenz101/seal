@@ -87,7 +87,7 @@ def reset_line(stdscr, y, x):
 
 
 def footer(stdscr, message, attr=curses.A_NORMAL):
-    max_y, max_x = stdscr.getmaxyx()
+    max_y = stdscr.getmaxyx()[0]
     reset_line(stdscr, max_y - 1, 0)
     addstr(stdscr, max_y - 1, 0, message, attr)
     stdscr.refresh()
