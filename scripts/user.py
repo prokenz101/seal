@@ -302,8 +302,6 @@ def choose_master_password(stdscr, username: str):
     getch(stdscr)
 
     with open("appdata/seal_core.csv", "a", newline="") as f:
-        
-
         w = writer(f)
         username_hash = sha256(username.encode()).hexdigest()
         password_hash = sha256(master_password.encode()).hexdigest()
