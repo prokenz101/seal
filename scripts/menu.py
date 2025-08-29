@@ -58,8 +58,7 @@ def first_time_launch(stdscr):
     curses.curs_set(1)
     move(stdscr, 0, 0)
     if colors[0] == curses.color_pair(7) | curses.A_UNDERLINE:
-        setup_my_sql(stdscr)
-        from scripts.user import choose_username
+        setup_mysql(stdscr)
 
         choose_username(stdscr)
     else:
@@ -125,14 +124,14 @@ def normal_launch(stdscr):
     if colors[0] == curses.color_pair(7) | curses.A_UNDERLINE:
         log_in(stdscr)
     elif colors[1] == curses.color_pair(7) | curses.A_UNDERLINE:
-        setup_my_sql(stdscr)
+        setup_mysql(stdscr)
         normal_launch(stdscr)
     else:
         #! Exiting...
         pass
 
 
-def setup_my_sql(stdscr):
+def setup_mysql(stdscr):
     """Set up the MySQL connection parameters."""
 
     #! Clear the terminal

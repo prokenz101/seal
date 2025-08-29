@@ -254,9 +254,7 @@ def choose_master_password(stdscr, username: str):
                         stdscr, 10, 18 + len(confirm_password)
                     )  #* Move cursor to end of confirm password
                     stdscr.refresh()
-                    confirm_ch = getch(
-                        stdscr
-                    )  #* Get user key press for confirm password
+                    confirm_ch = getch(stdscr)  #* Get user key press for confirm password
                     if confirm_ch == curses.KEY_RESIZE:
                         continue
 
@@ -316,7 +314,7 @@ def create_salt(username: str) -> None:
     """Create a salt file for the given username."""
 
     username_hash = sha256(username.encode()).hexdigest()
-    salt = urandom(16)
+    salt = urandom(16)  #* Generate a random 16-byte salt
     makedirs("salts", exist_ok=True)
 
     with open(f"salts/{username_hash}_salt.dat", "wb") as f:
