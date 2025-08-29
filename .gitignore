@@ -5,3 +5,4 @@ salts
 *.ps1
 line-counter.exe
 appdata
+*.docx
