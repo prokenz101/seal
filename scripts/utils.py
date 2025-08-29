@@ -9,9 +9,9 @@ def exception_handler(message="Something went wrong.", exception=None):
     print()
     print(message)
     print()
-    if Exception:
+    if exception:
         print("\033[93mFull error details:\033[0m")
-        print(Exception)
+        print(exception)
         print()
     exit()
 
