@@ -3,6 +3,8 @@ from scripts.cutils import reset_line, getch, move, addstr, footer
 
 
 def first_time_launch(stdscr):
+    """Handle the first-time launch experience for the user."""
+
     #! Clear the terminal
     stdscr.clear()
 
@@ -57,6 +59,8 @@ def first_time_launch(stdscr):
 
 
 def normal_launch(stdscr):
+    """Handle the normal launch experience for the user."""
+
     #! Clear the terminal
     stdscr.clear()
 
@@ -120,6 +124,8 @@ def normal_launch(stdscr):
 
 
 def setup_my_sql(stdscr):
+    """Set up the MySQL connection parameters."""
+
     #! Clear the terminal
     stdscr.clear()
 
@@ -335,7 +341,7 @@ def setup_my_sql(stdscr):
         fernet.encrypt(data["host"].encode()),
         fernet.encrypt(data["port"].encode()),
         fernet.encrypt(data["username"].encode()),
-        fernet.encrypt(data["password"].encode())
+        fernet.encrypt(data["password"].encode()),
     ]
 
     #* Save encrypted data
@@ -345,6 +351,8 @@ def setup_my_sql(stdscr):
 
 
 def log_in(stdscr):
+    """Handle the login process for the user."""
+
     #! Clear the terminal
     stdscr.clear()
     username = ""
@@ -355,6 +363,7 @@ def log_in(stdscr):
     pos_to_data = {0: "username", 1: "password"}
 
     from csv import reader
+
     with open("appdata/seal_core.csv", "r") as f:
         reader = list(reader(f))
 
@@ -376,19 +385,17 @@ def log_in(stdscr):
             addstr(stdscr, 5, 0, f"Password: {password}")
         else:
             addstr(stdscr, 4, 0, "Press [F2] to show password", curses.color_pair(6))
-            addstr(
-                stdscr, 5, 0, f"Password: {'*' * len(password)}"
-            )
+            addstr(stdscr, 5, 0, f"Password: {'*' * len(password)}")
 
         move(stdscr, *movements[current_pos])
         ch = getch(stdscr)
         if ch == curses.KEY_RESIZE:
             continue
 
-        if ch == curses.KEY_F2: #* F2 key
+        if ch == curses.KEY_F2:  #* F2 key
             show_password = not show_password
 
-        elif ch == curses.KEY_UP or ch == 353: #* 353 is Shift+Tab in curses
+        elif ch == curses.KEY_UP or ch == 353:  #* 353 is Shift+Tab in curses
             if current_pos > 0:
                 current_pos -= 1
                 reset_line(stdscr, movements[current_pos + 1][0], 0)
@@ -422,7 +429,7 @@ def log_in(stdscr):
 
             for row in reader:
                 if skip:
-                    skip = False #* Skip the SQL row
+                    skip = False  #* Skip the SQL row
                     continue
 
                 if row[0] == username_hash and row[1] == password_hash:
@@ -441,7 +448,9 @@ def log_in(stdscr):
             else:
                 #* Failed login
                 reset_line(stdscr, 7, 0)
-                addstr(stdscr, 7, 0, "Invalid username or password.", curses.color_pair(3))
+                addstr(
+                    stdscr, 7, 0, "Invalid username or password.", curses.color_pair(3)
+                )
                 continue
 
             break
@@ -450,7 +459,7 @@ def log_in(stdscr):
             #* Edit mode
             editing = pos_to_data[current_pos]
             if editing == "username":
-                if 32 <= ch <= 126: #* Printable ASCII characters
+                if 32 <= ch <= 126:  #* Printable ASCII characters
                     username += chr(ch)
                     movements[current_pos][1] += 1
                 elif ch in (curses.KEY_BACKSPACE, 127, 8):
@@ -470,5 +479,5 @@ def log_in(stdscr):
             reset_line(stdscr, movements[current_pos][0], 0)
 
     #* Enter vault
-    #TODO: Remove this clear when enter vault is implemented
+    # TODO: Remove this clear when enter vault is implemented
     stdscr.clear()

@@ -7,6 +7,8 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 
 def get_fernet_key(master_password: str, salt_file: str) -> Fernet:
+    """Generate a Fernet key from the master password and salt file."""
+
     with open(salt_file, "rb") as f:
         salt = f.read()
 
@@ -24,6 +26,8 @@ def get_fernet_key(master_password: str, salt_file: str) -> Fernet:
 
 
 def encrypt(username: str, master_password: str, data: str) -> str:
+    """Encrypt a string using the user's master password and a unique salt."""
+
     username_hash = sha256(username.encode()).hexdigest()
     fernet = get_fernet_key(master_password, f"salts/{username_hash}_salt.dat")
     encrypted_data = fernet.encrypt(data.encode()).decode()
@@ -31,6 +35,8 @@ def encrypt(username: str, master_password: str, data: str) -> str:
 
 
 def encrypt_data(username: str, master_password: str, data: list) -> list:
+    """Encrypt a list of strings using the user's master password and a unique salt."""
+
     encrypted_data = []
 
     for record in data:
@@ -43,6 +49,8 @@ def encrypt_data(username: str, master_password: str, data: list) -> list:
 
 
 def decrypt(username: str, master_password: str, data: str) -> str:
+    """Decrypt a string using the user's master password and a unique salt."""
+
     username_hash = sha256(username.encode()).hexdigest()
     fernet = get_fernet_key(master_password, f"salts/{username_hash}_salt.dat")
     decrypted_data = fernet.decrypt(data.encode()).decode()
@@ -50,6 +58,8 @@ def decrypt(username: str, master_password: str, data: str) -> str:
 
 
 def decrypt_data(username: str, master_password: str, data: list) -> list:
+    """Decrypt a list of strings using the user's master password and a unique salt."""
+
     decrypted_data = []
     username_hash = sha256(username.encode()).hexdigest()
     fernet = get_fernet_key(master_password, f"salts/{username_hash}_salt.dat")

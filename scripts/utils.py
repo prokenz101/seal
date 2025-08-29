@@ -1,4 +1,6 @@
 def exception_handler(message="Something went wrong.", Exception=None):
+    """Handle exceptions and display an error message."""
+
     print("\033[91m\033[1m[Fatal Error]\033[0m")  #* Red color
     print()
     print(message)
@@ -11,10 +13,14 @@ def exception_handler(message="Something went wrong.", Exception=None):
 
 
 def rgb_to_curses_color(r, g, b):
+    """Convert RGB color values to curses color format."""
+
     return int(r * 1000 / 255), int(g * 1000 / 255), int(b * 1000 / 255)
 
 
 def accounts_exist():
+    """Check if any user accounts exist."""
+
     from os import path, listdir
     from re import compile
 
@@ -33,6 +39,8 @@ def accounts_exist():
 
 
 def is_all_modules_installed():
+    """Check if all required modules are installed."""
+
     modules = {"windows_curses": False, "cryptography": False, "mysql.connector": False}
     #* Testing if individual modules are installed
 

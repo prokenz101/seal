@@ -6,6 +6,8 @@ from scripts.cutils import getch, addstr, move, reset_line
 
 
 def choose_username(stdscr) -> None:
+    """Prompt the user to create a username."""
+
     #! Clear the terminal
     stdscr.clear()
 
@@ -103,6 +105,8 @@ def choose_username(stdscr) -> None:
 
 
 def choose_master_password(stdscr, username: str) -> None:
+    """Prompt the user to create a master password."""
+
     #! Clear the terminal
     stdscr.clear()
 
@@ -235,10 +239,19 @@ def choose_master_password(stdscr, username: str) -> None:
 
                 confirm_password = ""
                 while True:
-                    addstr(stdscr, 10, 0, f"Confirm password: {'*' * len(confirm_password)} ")
-                    move(stdscr, 10, 18 + len(confirm_password))  #* Move cursor to end of confirm password
+                    addstr(
+                        stdscr,
+                        10,
+                        0,
+                        f"Confirm password: {'*' * len(confirm_password)} ",
+                    )
+                    move(
+                        stdscr, 10, 18 + len(confirm_password)
+                    )  #* Move cursor to end of confirm password
                     stdscr.refresh()
-                    confirm_ch = getch(stdscr)  #* Get user key press for confirm password
+                    confirm_ch = getch(
+                        stdscr
+                    )  #* Get user key press for confirm password
                     if confirm_ch == curses.KEY_RESIZE:
                         continue
 
@@ -250,7 +263,13 @@ def choose_master_password(stdscr, username: str) -> None:
                         if confirm_password == master_password:
                             break
                         else:
-                            addstr(stdscr, 11, 0, "Passwords do not match! Try again.", curses.color_pair(1))
+                            addstr(
+                                stdscr,
+                                11,
+                                0,
+                                "Passwords do not match! Try again.",
+                                curses.color_pair(1),
+                            )
                             reset_line(stdscr, 10, 0)
                             confirm_password = ""
 
@@ -290,6 +309,8 @@ def choose_master_password(stdscr, username: str) -> None:
 
 
 def create_salt(username: str) -> None:
+    """Create a salt file for the given username."""
+
     from pickle import dump
     from hashlib import sha256
     from os import urandom, makedirs

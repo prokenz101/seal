@@ -1,4 +1,6 @@
 def main(stdscr):
+    """Main entry point."""
+
     #* Start SEAL
     from scripts.cutils import setup_colors
     setup_colors(stdscr)

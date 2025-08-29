@@ -4,7 +4,10 @@ import curses
 
 
 def setup_colors(stdscr):
+    "Sets up all color pairs and handles terminals that do not support colors."
+
     from scripts.utils import rgb_to_curses_color, exception_handler
+
     curses.start_color()
 
     if curses.can_change_color():
@@ -12,11 +15,11 @@ def setup_colors(stdscr):
         curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_BLACK)
         curses.init_pair(3, curses.COLOR_RED, curses.COLOR_BLACK)
 
-        curses.init_color(11, *rgb_to_curses_color(125, 229, 255)) #* teal
+        curses.init_color(11, *rgb_to_curses_color(125, 229, 255))  #* teal
         curses.init_pair(4, 11, curses.COLOR_BLACK)
 
         curses.init_pair(5, curses.COLOR_WHITE, curses.COLOR_BLACK)
-        curses.init_pair(6, 8, curses.COLOR_BLACK) #* gray
+        curses.init_pair(6, 8, curses.COLOR_BLACK)  #* gray
         curses.init_pair(7, curses.COLOR_BLACK, curses.COLOR_WHITE)
     else:
         stdscr.clear()
@@ -26,7 +29,8 @@ def setup_colors(stdscr):
 
 
 def exit_curses(stdscr):
-    #* Exit the program and restore terminal settings
+    "Exit the program and restore terminal settings."
+
     curses.nocbreak()
     stdscr.keypad(False)
     curses.echo()
@@ -34,6 +38,9 @@ def exit_curses(stdscr):
 
 
 def getch(stdscr):
+    """Get a character from the user.
+
+    Handles terminal resize events to prevent out of bounds text."""
     ch = stdscr.getch()
     if ch == curses.KEY_RESIZE:
         stdscr.clear()
@@ -52,6 +59,8 @@ def getch(stdscr):
 
 
 def move(stdscr, y, x):
+    """Move the cursor to the specified position without going out of bounds."""
+
     max_y, max_x = stdscr.getmaxyx()
     if 0 <= y < max_y and 0 <= x < max_x:
         stdscr.move(y, x)
@@ -67,6 +76,8 @@ def move(stdscr, y, x):
 
 
 def addstr(stdscr, y, x, string, attr=curses.A_NORMAL):
+    """Add a string to the specified position without going out of bounds."""
+
     max_y, max_x = stdscr.getmaxyx()
     if 0 <= y < max_y and 0 <= x + len(string) < max_x:
         stdscr.addstr(y, x, string, attr)
@@ -82,11 +93,15 @@ def addstr(stdscr, y, x, string, attr=curses.A_NORMAL):
 
 
 def reset_line(stdscr, y, x):
+    """Clear a specific line."""
+
     move(stdscr, y, x)
     stdscr.clrtoeol()
 
 
 def footer(stdscr, message, attr=curses.A_NORMAL):
+    """Display a footer message at the bottom of the screen."""
+
     max_y = stdscr.getmaxyx()[0]
     reset_line(stdscr, max_y - 1, 0)
     addstr(stdscr, max_y - 1, 0, message, attr)
