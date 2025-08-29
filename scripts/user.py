@@ -9,7 +9,8 @@ from pickle import dump
 
 from scripts.cutils import addstr, getch, move, reset_line
 
-def choose_username(stdscr) -> None:
+
+def choose_username(stdscr):
     """Prompt the user to create a username."""
 
     #! Clear the terminal
@@ -108,7 +109,7 @@ def choose_username(stdscr) -> None:
     choose_master_password(stdscr, username)
 
 
-def choose_master_password(stdscr, username: str) -> None:
+def choose_master_password(stdscr, username: str):
     """Prompt the user to create a master password."""
 
     #! Clear the terminal
