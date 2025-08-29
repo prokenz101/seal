@@ -6,3 +6,5 @@ salts
 line-counter.exe
 appdata
 *.docx
+*.pdf
+*.tmp
