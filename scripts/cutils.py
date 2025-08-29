@@ -28,15 +28,6 @@ def setup_colors(stdscr):
         )
 
 
-def exit_curses(stdscr):
-    "Exit the program and restore terminal settings."
-
-    curses.nocbreak()
-    stdscr.keypad(False)
-    curses.echo()
-    curses.endwin()
-
-
 def getch(stdscr):
     """Get a character from the user.
 
