@@ -65,14 +65,6 @@ def move(stdscr, y, x):
     if 0 <= y < max_y and 0 <= x < max_x:
         stdscr.move(y, x)
     else:
-        curses.nocbreak()
-        stdscr.keypad(False)
-        curses.echo()
-        curses.endwin()
-        print("\033[91m\033[1m[Fatal Error]\033[0m")
-        print()
-        print("Please enlarge your terminal window.\n")
-        exit()
 
 
 def addstr(stdscr, y, x, string, attr=curses.A_NORMAL):
@@ -82,14 +74,7 @@ def addstr(stdscr, y, x, string, attr=curses.A_NORMAL):
     if 0 <= y < max_y and 0 <= x + len(string) < max_x:
         stdscr.addstr(y, x, string, attr)
     else:
-        curses.nocbreak()
-        stdscr.keypad(False)
-        curses.echo()
-        curses.endwin()
-        print("\033[91m\033[1m[Fatal Error]\033[0m")
-        print()
-        print("Please enlarge your terminal window.\n")
-        exit()
+        raise curses.error("Terminal window is too small to display text.")
 
 
 def reset_line(stdscr, y, x):

@@ -26,19 +26,6 @@ try:
 
     if is_all_modules_installed():
         import curses
-        from scripts.cutils import exit_curses
-
-        stdscr = curses.initscr() #* Initialize curses
-        curses.noecho() #* Hides user inputs
-        curses.cbreak() #* React to keys instantly
-        stdscr.keypad(True) #* Enable the keypad keys
-
-        try:
-            curses.wrapper(main)
-        except curses.error:
-            exception_handler("Terminal window is too small to display text.")
-        exit_curses(stdscr)
-
 except ModuleNotFoundError as e:
     missing_file = str(e).split("'")[1].split(".")[1]
     print(
