@@ -1,12 +1,12 @@
 import curses
 
+from scripts.utils import exception_handler, rgb_to_curses_color
+
 #* cutils -> utilities involving curses module
 
 
 def setup_colors(stdscr):
     "Sets up all color pairs and handles terminals that do not support colors."
-
-    from scripts.utils import rgb_to_curses_color, exception_handler
 
     curses.start_color()
 
@@ -65,6 +65,7 @@ def move(stdscr, y, x):
     if 0 <= y < max_y and 0 <= x < max_x:
         stdscr.move(y, x)
     else:
+        raise curses.error("Terminal window is too small to display text.")
 
 
 def addstr(stdscr, y, x, string, attr=curses.A_NORMAL):

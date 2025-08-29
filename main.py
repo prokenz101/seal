@@ -1,8 +1,13 @@
+from os import path, system
+from sys import modules
+
+
 def main(stdscr):
     """Main entry point."""
 
     #* Start SEAL
     from scripts.cutils import setup_colors
+
     setup_colors(stdscr)
 
     from scripts.menu import first_time_launch, normal_launch
@@ -14,8 +19,6 @@ def main(stdscr):
 
     
 try:
-    from sys import modules
-    from os import path, system
     from scripts.utils import exception_handler, is_all_modules_installed, accounts_exist
 
     if "idlelib.run" in modules:

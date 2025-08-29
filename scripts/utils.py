@@ -1,4 +1,8 @@
-def exception_handler(message="Something went wrong.", Exception=None):
+from os import path, listdir
+from re import compile
+
+
+def exception_handler(message="Something went wrong.", exception=None):
     """Handle exceptions and display an error message."""
 
     print("\033[91m\033[1m[Fatal Error]\033[0m")  #* Red color
@@ -20,9 +24,6 @@ def rgb_to_curses_color(r, g, b):
 
 def accounts_exist():
     """Check if any user accounts exist."""
-
-    from os import path, listdir
-    from re import compile
 
     if path.exists("salts"):
         salts_dir_files = listdir("salts")

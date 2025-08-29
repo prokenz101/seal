@@ -1,9 +1,13 @@
 
 #* For handling the master password
 
+from csv import writer
 import curses
-from scripts.cutils import getch, addstr, move, reset_line
+from hashlib import sha256
+from os import makedirs, urandom
+from pickle import dump
 
+from scripts.cutils import addstr, getch, move, reset_line
 
 def choose_username(stdscr) -> None:
     """Prompt the user to create a username."""
@@ -299,21 +303,16 @@ def choose_master_password(stdscr, username: str) -> None:
     getch(stdscr)
 
     with open("appdata/seal_core.csv", "a", newline="") as f:
-        from csv import writer
-        from hashlib import sha256
+        
 
-        writer = writer(f)
+        w = writer(f)
         username_hash = sha256(username.encode()).hexdigest()
         password_hash = sha256(master_password.encode()).hexdigest()
-        writer.writerow([username_hash, password_hash])
+        w.writerow([username_hash, password_hash])
 
 
 def create_salt(username: str) -> None:
     """Create a salt file for the given username."""
-
-    from pickle import dump
-    from hashlib import sha256
-    from os import urandom, makedirs
 
     username_hash = sha256(username.encode()).hexdigest()
     salt = urandom(16)

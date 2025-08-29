@@ -1,5 +1,14 @@
 import curses
+import mysql.connector
+import curses
+from csv import reader, writer
+from hashlib import sha256
+from os import makedirs, urandom
+from pickle import dump
+
 from scripts.cutils import reset_line, getch, move, addstr, footer
+from scripts.encryption import get_fernet_key
+from scripts.user import choose_username
 
 
 def first_time_launch(stdscr):
@@ -255,7 +264,6 @@ def setup_my_sql(stdscr):
 
             else:
                 #* Verify connection
-                import mysql.connector
 
                 try:
                     connection = mysql.connector.connect(
@@ -319,10 +327,6 @@ def setup_my_sql(stdscr):
 
             reset_line(stdscr, movements[current_pos][0], 0)
 
-    from pickle import dump
-    from os import makedirs, urandom
-    from scripts.encryption import get_fernet_key
-    from csv import writer
 
     app_salt_file = "appdata/app_salt.dat"
     app_master_password = "seal_app_encryption_secret"
@@ -346,8 +350,8 @@ def setup_my_sql(stdscr):
 
     #* Save encrypted data
     with open("appdata/seal_core.csv", "w", newline="") as f:
-        writer = writer(f)
-        writer.writerow(encrypted_sql_data)
+        w = writer(f)
+        w.writerow(encrypted_sql_data)
 
 
 def log_in(stdscr):
@@ -362,10 +366,8 @@ def log_in(stdscr):
     current_pos = 0
     pos_to_data = {0: "username", 1: "password"}
 
-    from csv import reader
-
     with open("appdata/seal_core.csv", "r") as f:
-        reader = list(reader(f))
+        r = list(reader(f))
 
     while True:
         addstr(stdscr, 0, 0, "Log in", curses.A_BOLD)
@@ -421,13 +423,11 @@ def log_in(stdscr):
                 addstr(stdscr, 7, 0, msg, curses.color_pair(3))
                 continue
 
-            from hashlib import sha256
-
             skip = True
             username_hash = sha256(username.encode()).hexdigest()
             password_hash = sha256(password.encode()).hexdigest()
 
-            for row in reader:
+            for row in r:
                 if skip:
                     skip = False  #* Skip the SQL row
                     continue
