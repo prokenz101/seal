@@ -396,7 +396,7 @@ def log_in(stdscr):
         if ch == curses.KEY_F2:  #* F2 key
             show_password = not show_password
 
-        elif ch == curses.KEY_UP or ch == 353:  #* 353 is Shift+Tab in curses
+        elif ch == curses.KEY_UP:
             if current_pos > 0:
                 current_pos -= 1
                 reset_line(stdscr, movements[current_pos + 1][0], 0)
