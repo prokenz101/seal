@@ -5,7 +5,7 @@ from sys import modules
 def main(stdscr):
     """Main entry point."""
 
-    #* Start SEAL
+    #* Start seal
     from scripts.cutils import setup_colors
 
     setup_colors(stdscr)
