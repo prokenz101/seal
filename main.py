@@ -43,6 +43,7 @@ if __name__ == "__main__":
             f"\033[96mMissing required file '\033[92mscripts/{missing_file}.py\033[96m'. Please restore or re-download it.\033[0m"
         )
     except KeyboardInterrupt:
+        #* ANSI codes for printing colors on modern terminals
         print("\033[91m\033[1mExiting...\033[0m")
         print("Program interrupted by user.")
     except Exception as e:
