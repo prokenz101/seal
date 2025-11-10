@@ -69,6 +69,26 @@ def addstr(stdscr, y, x, string, attr=curses.A_NORMAL):
         raise curses.error("Terminal window is too small to display text.")
 
 
+def addlines(stdscr, y, x, string: str, attr=curses.A_NORMAL):
+    """Add multiple lines of text starting from the specified position."""
+    
+    lines = string.split("\n")
+    longest_line = ""
+    #* Get the longest line
+    for line in lines:
+        if len(line) > len(longest_line):
+            longest_line = line
+
+    max_y, max_x = stdscr.getmaxyx()
+    if 0 <= y + len(lines) - 1 < max_y and 0 <= x + len(longest_line) - 1 < max_x:
+        i = 0
+        for line in lines:
+            stdscr.addstr(y + i, x, line, attr)
+            i += 1
+    else:
+        raise curses.error("Terminal window is too small to display text.")
+
+
 def reset_line(stdscr, y, x):
     """Clear a specific line."""
 
