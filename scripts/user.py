@@ -45,6 +45,7 @@ def choose_username(stdscr):
             requirements["length"] = False
             allow_typing = False
         else:
+            reset_line(stdscr, 2, 0)
             addstr(
                 stdscr,
                 2,
@@ -126,6 +127,7 @@ def choose_master_password(stdscr, username: str):
 
         #* Check if password meets length requirement
         if 12 <= len(master_password) <= 64:
+            reset_line(stdscr, 2, 0)
             addstr(
                 stdscr,
                 2,
