@@ -79,3 +79,45 @@ def is_all_modules_installed():
         return False
 
     return True
+
+
+def get_table(conn, tablename, database=None) -> str | None:
+    cursor = conn.cursor()
+    if database is not None:
+        cursor.execute("USE {}".format(database))
+    else:
+        return
+
+    cursor.execute("SELECT * FROM {}".format(tablename))
+    results = cursor.fetchall()
+
+    widths = []
+    columns = []
+    pipe = "|"
+    separator = "+"
+
+    index = 0
+    for cd in cursor.description if cursor.description is not None else []:
+        widths.append(
+            max(
+                max(list(map(lambda x: len(str(tuple(x)[index])), results))), len(cd[0])
+            )
+        )
+        columns.append(cd[0])
+        index += 1
+
+    for w in widths:
+        pipe += " %-" + "%ss |" % (w,)
+        separator += "-" * w + "--+"
+
+    table = ""
+
+    table += separator + "\n"
+    table += pipe % tuple(columns) + "\n"
+    table += separator + "\n"
+    for row in results:
+        table += pipe % row + "\n"
+    table += separator + "\n"
+
+    conn.close()
+    return table
