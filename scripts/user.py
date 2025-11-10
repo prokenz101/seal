@@ -103,9 +103,15 @@ def choose_username(stdscr):
 
     # TODO: Add username to file or database
 
-    stdscr.clear()
-    stdscr.refresh()
-    addstr(stdscr, 0, 0, "Username set successfully!", curses.A_BOLD)
+    reset_line(stdscr, 7, 0)
+    addstr(
+        stdscr,
+        7,
+        0,
+        "[\u2713] Username set successfully!",
+        curses.color_pair(2),
+    )
+    addstr(stdscr, 8, 0, "Press any key to continue...")
     getch(stdscr)
     choose_master_password(stdscr, username)
 
@@ -298,9 +304,15 @@ def choose_master_password(stdscr, username: str):
 
     create_salt(username)
 
-    stdscr.clear()
-    stdscr.refresh()
-    addstr(stdscr, 0, 0, "Password set successfully!", curses.A_BOLD)
+    reset_line(stdscr, 12, 0)
+    addstr(
+        stdscr,
+        12,
+        0,
+        "[\u2713] Password set successfully!",
+        curses.color_pair(2),
+    )
+    addstr(stdscr, 13, 0, "Press any key to continue...")
     getch(stdscr)
 
     with open("appdata/seal_core.csv", "a", newline="") as f:
