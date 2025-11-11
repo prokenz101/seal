@@ -27,15 +27,29 @@ def accounts_exist():
     """Check if any user accounts exist."""
 
     if path.exists("data/salts"):
+        try:
+            from core.sqlutils import get_usernames
+            usernames = get_usernames()
+        except Exception as e:
+            exception_handler(
+                message="Failed to retrieve usernames from the database.", exception=e
+            )
+
         salts_dir_files = listdir("data/salts")
-        if any(f.endswith(".dat") for f in salts_dir_files):
-            hash_pattern = compile(r"[A-Fa-f0-9]{64}")
-            if any(hash_pattern.search(f) for f in salts_dir_files):
-                return True
-            else:
-                exception_handler(
-                    message="Invalid account hash found in \033[96m'salts'\033[0m directory."
-                )
+        actual_files = {f for f in salts_dir_files if f.endswith(".dat")}
+        expected_files = {
+            f"{username}_salt.dat" for username in usernames # type: ignore
+        }
+
+        if not expected_files:
+            return False
+
+        if actual_files == expected_files:
+            return True
+        else:
+            exception_handler(
+                message="Invalid account salts found in \033[96m'data/salts'\033[0m directory."
+            )
     else:
         return False
 
