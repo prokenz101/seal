@@ -125,6 +125,4 @@ def log_in(stdscr, welcome):
 
             reset_line(stdscr, movements[current_pos][0], 0)
 
-    #* Enter vault
-    # TODO: Remove this clear when enter vault is implemented
-    stdscr.clear()
+    main_menu(stdscr, username)
