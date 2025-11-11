@@ -66,7 +66,7 @@ def first_time_launch(stdscr):
         pass
 
 
-def normal_launch(stdscr):
+def normal_launch(stdscr, welcome="Welcome back, "):
     """Handle the normal launch experience for the user."""
 
     #! Clear the terminal
@@ -122,7 +122,7 @@ def normal_launch(stdscr):
     curses.curs_set(1)
     move(stdscr, 0, 0)
     if colors[0] == curses.color_pair(7) | curses.A_UNDERLINE:
-        log_in(stdscr)
+        log_in(stdscr, welcome)
     elif colors[1] == curses.color_pair(7) | curses.A_UNDERLINE:
         setup_mysql(stdscr)
         normal_launch(stdscr)
@@ -353,7 +353,7 @@ def setup_mysql(stdscr):
         w.writerow(encrypted_sql_data)
 
 
-def log_in(stdscr):
+def log_in(stdscr, welcome):
     """Handle the login process for the user."""
 
     #! Clear the terminal
@@ -438,7 +438,7 @@ def log_in(stdscr):
                         stdscr,
                         7,
                         0,
-                        "Welcome back, " + username,
+                        welcome + username,
                         curses.color_pair(2),
                     )
                     addstr(stdscr, 8, 0, "Press any key to continue...")

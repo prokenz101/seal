@@ -16,6 +16,7 @@ def main(stdscr):
         normal_launch(stdscr)
     else:
         first_time_launch(stdscr)
+        normal_launch(stdscr, welcome="Welcome, ")
 
 
 if __name__ == "__main__":
