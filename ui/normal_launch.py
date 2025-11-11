@@ -18,16 +18,21 @@ def normal_launch(stdscr, welcome="Welcome back, "):
     while True:
         move(stdscr, 0, 0)
         stdscr.clrtoeol()
-        addstr(stdscr, 1, 0, "███████╗███████╗ █████╗ ██╗     ", curses.color_pair(4))
-        addstr(stdscr, 2, 0, "██╔════╝██╔════╝██╔══██╗██║     ", curses.color_pair(4))
-        addstr(stdscr, 3, 0, "███████╗█████╗  ███████║██║     ", curses.color_pair(4))
-        addstr(stdscr, 4, 0, "╚════██║██╔══╝  ██╔══██║██║     ", curses.color_pair(4))
-        addstr(stdscr, 5, 0, "███████║███████╗██║  ██║███████╗", curses.color_pair(4))
-        addstr(stdscr, 6, 0, "╚══════╝╚══════╝╚═╝  ╚═╝╚══════╝", curses.color_pair(4))
-        move(stdscr, 7, 0)
-        stdscr.clrtoeol()
-        addstr(stdscr, 8, 0, "Choose an option:")
-        move(stdscr, 9, 0)
+        addlines(
+            stdscr,
+            1,
+            0,
+            """                               ▄▄▄▄
+                               ▀▀██     
+ ▄▄█████▄   ▄████▄    ▄█████▄    ██     
+ ██▄▄▄▄ ▀  ██▄▄▄▄██   ▀ ▄▄▄██    ██     
+  ▀▀▀▀██▄  ██▀▀▀▀▀▀  ▄██▀▀▀██    ██     
+ █▄▄▄▄▄██  ▀██▄▄▄▄█  ██▄▄▄███    ██▄▄▄  
+  ▀▀▀▀▀▀     ▀▀▀▀▀    ▀▀▀▀ ▀▀     ▀▀▀▀""",
+            curses.color_pair(4),
+        )
+        addstr(stdscr, 9, 0, "Choose an option:")
+        move(stdscr, 10, 0)
         stdscr.clrtoeol()
         addstr(stdscr, 10, 2, "Log in", colors[0])
         addstr(stdscr, 10, 11, "MySQL Setup", colors[1])

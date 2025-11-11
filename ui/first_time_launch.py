@@ -14,22 +14,23 @@ def first_time_launch(stdscr):
     curses.curs_set(0)
 
     while True:
-        addstr(stdscr, 0, 11, "Welcome to", curses.A_BOLD)
-        move(stdscr, 1, 0)
-        stdscr.clrtoeol()
-        addstr(stdscr, 2, 0, "███████╗███████╗ █████╗ ██╗     ", curses.color_pair(4))
-        addstr(stdscr, 3, 0, "██╔════╝██╔════╝██╔══██╗██║     ", curses.color_pair(4))
-        addstr(stdscr, 4, 0, "███████╗█████╗  ███████║██║     ", curses.color_pair(4))
-        addstr(stdscr, 5, 0, "╚════██║██╔══╝  ██╔══██║██║     ", curses.color_pair(4))
-        addstr(stdscr, 6, 0, "███████║███████╗██║  ██║███████╗", curses.color_pair(4))
-        addstr(stdscr, 7, 0, "╚══════╝╚══════╝╚═╝  ╚═╝╚══════╝", curses.color_pair(4))
-        move(stdscr, 8, 0)
-        stdscr.clrtoeol()
-        addstr(stdscr, 9, 0, "Choose an option:")
-        move(stdscr, 10, 0)
-        stdscr.clrtoeol()
-        addstr(stdscr, 11, 7, "Get Started", colors[0])
-        addstr(stdscr, 11, 21, "Exit", colors[1])
+        addstr(stdscr, 0, 13, "Welcome to", curses.A_BOLD)
+        addlines(
+            stdscr,
+            2,
+            0,
+            """                               ▄▄▄▄
+                               ▀▀██     
+ ▄▄█████▄   ▄████▄    ▄█████▄    ██     
+ ██▄▄▄▄ ▀  ██▄▄▄▄██   ▀ ▄▄▄██    ██     
+  ▀▀▀▀██▄  ██▀▀▀▀▀▀  ▄██▀▀▀██    ██     
+ █▄▄▄▄▄██  ▀██▄▄▄▄█  ██▄▄▄███    ██▄▄▄  
+  ▀▀▀▀▀▀     ▀▀▀▀▀    ▀▀▀▀ ▀▀     ▀▀▀▀""",
+            curses.color_pair(4),
+        )
+        addstr(stdscr, 10, 0, "Choose an option:")
+        addstr(stdscr, 12, 7, "Get Started", colors[0])
+        addstr(stdscr, 12, 21, "Exit", colors[1])
         footer(
             stdscr, "Use [◀] and [▶] arrow keys to navigate, and [Enter] to confirm."
         )
