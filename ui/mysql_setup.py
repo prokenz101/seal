@@ -223,7 +223,66 @@ def setup_mysql(stdscr):
         fernet.encrypt(data["password"].encode()),
     ]
 
-    #* Save encrypted data
-    with open("data/appdata/seal_core.csv", "w", newline="") as f:
-        w = writer(f)
-        w.writerow(encrypted_sql_data)
+   #* Save encrypted data
+    with open("data/appdata/mysql.dat", "wb") as f:
+        dump(encrypted_sql_data, f)
+
+
+def sql_warning(stdscr):
+    #! Clear the terminal
+    stdscr.clear()
+
+    while True:
+        addstr(stdscr, 1, 0, "Warning:", curses.color_pair(3) | curses.A_BOLD)
+        addlines(
+            stdscr,
+            2,
+            0,
+            """Changing your MySQL connection settings may affect access to
+your stored password data. """,
+            curses.A_BOLD,
+        )
+        addstr(
+            stdscr,
+            3,
+            27,
+            "If the new server address, username,",
+            curses.A_BOLD | curses.A_UNDERLINE,
+        )
+        addlines(
+            stdscr,
+            4,
+            0,
+            """or password is incorrect, seal will not be able to connect to
+the database that stores your saved accounts.""",
+            curses.A_BOLD | curses.A_UNDERLINE,
+        )
+        addlines(
+            stdscr,
+            7,
+            0,
+            """If the new settings do not match the actual database setup,
+your saved data may become permanently inaccessible.
+
+Proceed only if you are certain the new connection details
+are correct.""",
+            curses.A_BOLD,
+        )
+
+        stdscr.refresh()
+        sleep(3)
+        stdscr.addstr(
+            14,
+            0,
+            "Press [ESC] to go back, or any other key to continue...",
+            curses.A_BOLD,
+        )
+
+        ch = getch(stdscr)
+        if ch == curses.KEY_RESIZE:
+            continue
+
+        if ch != 27: #* ESC key
+            setup_mysql(stdscr)
+
+        break
