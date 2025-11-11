@@ -25,8 +25,8 @@ def rgb_to_curses_color(r, g, b):
 def accounts_exist():
     """Check if any user accounts exist."""
 
-    if path.exists("salts"):
-        salts_dir_files = listdir("salts")
+    if path.exists("data/salts"):
+        salts_dir_files = listdir("data/salts")
         if any(f.endswith(".dat") for f in salts_dir_files):
             hash_pattern = compile(r"[A-Fa-f0-9]{64}")
             if any(hash_pattern.search(f) for f in salts_dir_files):

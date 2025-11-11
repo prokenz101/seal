@@ -1,6 +1,5 @@
 import curses
-
-from scripts.utils import exception_handler, rgb_to_curses_color
+from core.utils import exception_handler, rgb_to_curses_color
 
 #* cutils -> utilities involving curses module
 

@@ -30,7 +30,7 @@ def encrypt(username, master_password, data):
     """Encrypt a string using the user's master password and a unique salt."""
 
     username_hash = sha256(username.encode()).hexdigest()
-    fernet = get_fernet_key(master_password, f"salts/{username_hash}_salt.dat")
+    fernet = get_fernet_key(master_password, f"data/salts/{username_hash}_salt.dat")
     encrypted_data = fernet.encrypt(data.encode()).decode()
     return encrypted_data
 
@@ -53,7 +53,7 @@ def decrypt(username, master_password, data):
     """Decrypt a string using the user's master password and a unique salt."""
 
     username_hash = sha256(username.encode()).hexdigest()
-    fernet = get_fernet_key(master_password, f"salts/{username_hash}_salt.dat")
+    fernet = get_fernet_key(master_password, f"data/salts/{username_hash}_salt.dat")
     decrypted_data = fernet.decrypt(data.encode()).decode()
     return decrypted_data
 
@@ -63,7 +63,7 @@ def decrypt_data(username, master_password, data):
 
     decrypted_data = []
     username_hash = sha256(username.encode()).hexdigest()
-    fernet = get_fernet_key(master_password, f"salts/{username_hash}_salt.dat")
+    fernet = get_fernet_key(master_password, f"data/salts/{username_hash}_salt.dat")
 
     for record in data:
         decrypted_record = [fernet.decrypt(field.encode()).decode() for field in record]

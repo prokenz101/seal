@@ -1,7 +1,6 @@
 __pycache__
 *.csv
 *.dat
-salts
-appdata
+data
 misc
 line-counter.exe

@@ -6,11 +6,12 @@ def main(stdscr):
     """Main entry point."""
 
     #* Start seal
-    from scripts.cutils import setup_colors
+    from core.cutils import setup_colors
 
     setup_colors(stdscr)
 
-    from scripts.menu import first_time_launch, normal_launch
+    from ui.first_time_launch import first_time_launch
+    from ui.normal_launch import normal_launch
 
     if accounts_exist():
         normal_launch(stdscr)
@@ -21,7 +22,7 @@ def main(stdscr):
 
 if __name__ == "__main__":
     try:
-        from scripts.utils import exception_handler, is_all_modules_installed, accounts_exist
+        from core.utils import exception_handler, is_all_modules_installed, accounts_exist
 
         if "idlelib.run" in modules:
             #! Program runs itself in a terminal if it is run in IDLE
@@ -37,12 +38,6 @@ if __name__ == "__main__":
             except curses.error:
                 exception_handler("Terminal window is too small to display text.")
 
-    except ModuleNotFoundError as e:
-        #* Handle error if the user deletes necessary script files
-        missing_file = str(e).split("'")[1].split(".")[1]
-        print(
-            f"\033[96mMissing required file '\033[92mscripts/{missing_file}.py\033[96m'. Please restore or re-download it.\033[0m"
-        )
     except KeyboardInterrupt:
         #* ANSI codes for printing colors on modern terminals
         print("\033[91m\033[1mExiting...\033[0m")
