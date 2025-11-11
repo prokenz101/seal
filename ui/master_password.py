@@ -203,11 +203,9 @@ def choose_master_password(stdscr, username: str):
     addstr(stdscr, 13, 0, "Press any key to continue...")
     getch(stdscr)
 
-    with open("data/appdata/seal_core.csv", "a", newline="") as f:
-        w = writer(f)
-        username_hash = sha256(username.encode()).hexdigest()
-        password_hash = sha256(master_password.encode()).hexdigest()
-        w.writerow([username_hash, password_hash])
+    from core.sqlutils import add_user
+
+    add_user(username, master_password)
 
     stdscr.clear()
     stdscr.refresh()
@@ -222,14 +220,3 @@ def choose_master_password(stdscr, username: str):
     addstr(stdscr, 3, 0, "You may now log in.")
     addstr(stdscr, 4, 0, "Press any key to continue...")
     getch(stdscr)
-
-
-def create_salt(username: str) -> None:
-    """Create a salt file for the given username."""
-
-    username_hash = sha256(username.encode()).hexdigest()
-    salt = urandom(16)  #* Generate a random 16-byte salt
-    makedirs("data/salts", exist_ok=True)
-
-    with open(f"data/salts/{username_hash}_salt.dat", "wb") as f:
-        dump(salt, f)

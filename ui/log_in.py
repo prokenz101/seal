@@ -16,9 +16,6 @@ def log_in(stdscr, welcome):
     current_pos = 0
     pos_to_data = {0: "username", 1: "password"}
 
-    with open("data/appdata/seal_core.csv", "r") as f:
-        r = list(reader(f))
-
     while True:
         addstr(stdscr, 0, 0, "Log in", curses.A_BOLD)
         move(stdscr, 1, 0)
