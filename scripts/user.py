@@ -321,6 +321,20 @@ def choose_master_password(stdscr, username: str):
         password_hash = sha256(master_password.encode()).hexdigest()
         w.writerow([username_hash, password_hash])
 
+    stdscr.clear()
+    stdscr.refresh()
+    reset_line(stdscr, 1, 0)
+    addstr(
+        stdscr,
+        1,
+        0,
+        "[\u2713] Account registered successfully!",
+        curses.color_pair(2),
+    )
+    addstr(stdscr, 3, 0, "You may now log in.")
+    addstr(stdscr, 4, 0, "Press any key to continue...")
+    getch(stdscr)
+
 
 def create_salt(username: str) -> None:
     """Create a salt file for the given username."""
