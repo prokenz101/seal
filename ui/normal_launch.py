@@ -3,6 +3,7 @@ from core.cutils import addstr, move, footer, getch, addlines
 from ui.mysql_setup import sql_warning
 from ui.log_in import log_in
 
+
 def normal_launch(stdscr, welcome="Welcome back, "):
     """Handle the normal launch experience for the user."""
 
@@ -11,6 +12,7 @@ def normal_launch(stdscr, welcome="Welcome back, "):
 
     colors = [
         curses.color_pair(7) | curses.A_UNDERLINE,
+        curses.color_pair(5),
         curses.color_pair(5),
         curses.color_pair(5),
     ]
@@ -42,7 +44,7 @@ def normal_launch(stdscr, welcome="Welcome back, "):
             stdscr, "Use [▲] and [▼] arrow keys to navigate, and [Enter] to confirm."
         )
 
-        ch = getch(stdscr)  #* Wait for user key press
+        ch = getch(stdscr) #* Wait for user key press
         if ch == curses.KEY_RESIZE:
             continue
 
@@ -57,7 +59,7 @@ def normal_launch(stdscr, welcome="Welcome back, "):
                 colors[index] = curses.color_pair(5)
                 colors[index - 1] = curses.color_pair(7) | curses.A_UNDERLINE
 
-        #* If Enter is pressed and requirement is met, exit loop
+       #* If Enter is pressed and requirement is met, exit loop
         elif ch in (curses.KEY_ENTER, 10, 13):
             break
 
@@ -66,6 +68,7 @@ def normal_launch(stdscr, welcome="Welcome back, "):
     move(stdscr, 0, 0)
     if colors[0] == curses.color_pair(7) | curses.A_UNDERLINE:
         log_in(stdscr, welcome)
+
     elif colors[1] == curses.color_pair(7) | curses.A_UNDERLINE:
         from ui.username import choose_username
 

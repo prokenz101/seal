@@ -138,7 +138,7 @@ def setup_mysql(stdscr):
                 )
 
             else:
-                #* Verify connection
+               #* Verify connection
 
                 try:
                     connection = mysql.connector.connect(
@@ -171,7 +171,7 @@ def setup_mysql(stdscr):
                     )
 
         else:
-            #* Edit mode
+           #* Edit mode
             editing = pos_to_data[movements[current_pos][0]]
 
             def handle_key_press(allowable_characters):
@@ -202,7 +202,6 @@ def setup_mysql(stdscr):
 
             reset_line(stdscr, movements[current_pos][0], 0)
 
-
     app_salt_file = "data/appdata/app_salt.dat"
     app_master_password = "seal_app_encryption_secret"
 
@@ -211,11 +210,11 @@ def setup_mysql(stdscr):
 
     salt = urandom(16)
     with open(app_salt_file, "wb") as f:
-        dump(salt, f)  #* Creating a salt for the global app master password
+        dump(salt, f) #* Creating a salt for the global app master password
 
     fernet = get_fernet_key(app_master_password, app_salt_file)
 
-    #* Encrypted SQL data
+   #* Encrypted SQL data
     encrypted_sql_data = [
         fernet.encrypt(data["host"].encode()),
         fernet.encrypt(data["port"].encode()),

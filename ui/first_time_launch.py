@@ -35,7 +35,7 @@ def first_time_launch(stdscr):
             stdscr, "Use [◀] and [▶] arrow keys to navigate, and [Enter] to confirm."
         )
 
-        ch = getch(stdscr)  #* Wait for user key press
+        ch = getch(stdscr) #* Wait for user key press
         if ch == curses.KEY_RESIZE:
             continue
 
@@ -44,7 +44,7 @@ def first_time_launch(stdscr):
         elif ch == curses.KEY_LEFT:
             colors = [curses.color_pair(7) | curses.A_UNDERLINE, curses.color_pair(5)]
 
-        #* If Enter is pressed and requirement is met, exit loop
+       #* If Enter is pressed and requirement is met, exit loop
         elif ch in (curses.KEY_ENTER, 10, 13):
             break
 

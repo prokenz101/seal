@@ -32,7 +32,7 @@ if __name__ == "__main__":
         if "idlelib.run" in modules:
             #! Program runs itself in a terminal if it is run in IDLE
             #! This is because IDLE does not support curses, or colored text
-            script = path.abspath(__file__)  #* Path of main.py
+            script = path.abspath(__file__) #* Path of main.py
             system(f'start "" py "{script}"')
 
         if is_all_modules_installed():
@@ -44,7 +44,7 @@ if __name__ == "__main__":
                 exception_handler("Terminal window is too small to display text.")
 
     except KeyboardInterrupt:
-        #* ANSI codes for printing colors on modern terminals
+       #* ANSI codes for printing colors on modern terminals
         print("\033[91m\033[1mExiting...\033[0m")
         print("Program interrupted by user.")
     except Exception as e:

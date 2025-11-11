@@ -18,7 +18,7 @@ def choose_master_password(stdscr, username: str):
         addstr(stdscr, 1, 0, "Requirements:")
         allow_typing = True
 
-        #* Check if password meets length requirement
+       #* Check if password meets length requirement
         if 12 <= len(master_password) <= 64:
             reset_line(stdscr, 2, 0)
             addstr(
@@ -49,7 +49,7 @@ def choose_master_password(stdscr, username: str):
             )
             requirements["len"] = False
 
-        #* Check if password has at least one uppercase and lowercase letter
+       #* Check if password has at least one uppercase and lowercase letter
         if any(c.isupper() for c in master_password) and any(
             c.islower() for c in master_password
         ):
@@ -71,7 +71,7 @@ def choose_master_password(stdscr, username: str):
             )
             requirements["upperlower"] = False
 
-        #* Check if password has at least one digit
+       #* Check if password has at least one digit
         if any(c.isdigit() for c in master_password):
             addstr(
                 stdscr,
@@ -91,7 +91,7 @@ def choose_master_password(stdscr, username: str):
             )
             requirements["digit"] = False
 
-        #* Check if password has at least one special character
+       #* Check if password has at least one special character
         if any(c in "!#$%&()*+,-./:;<=>?@[]^_`{|}~" for c in master_password):
             addstr(
                 stdscr,
@@ -112,7 +112,7 @@ def choose_master_password(stdscr, username: str):
             requirements["special"] = False
 
         move(stdscr, 6, 0)
-        stdscr.clrtoeol()  #* Adds a new line
+        stdscr.clrtoeol() #* Adds a new line
 
         if show_password:
             addstr(stdscr, 7, 0, "Press [F2] to hide password", curses.color_pair(6))
@@ -120,17 +120,17 @@ def choose_master_password(stdscr, username: str):
         else:
             addstr(stdscr, 7, 0, "Press [F2] to show password", curses.color_pair(6))
             addstr(stdscr, 8, 0, f"Password: {'*' * len(master_password)} ")
-        move(stdscr, 8, 10 + len(master_password))  #* Move cursor to end of password
+        move(stdscr, 8, 10 + len(master_password)) #* Move cursor to end of password
         stdscr.refresh()
 
-        ch = getch(stdscr)  #* Get user key press
+        ch = getch(stdscr) #* Get user key press
         if ch == curses.KEY_RESIZE:
             continue
 
-        #* If Enter is pressed and requirement is met, exit loop
+       #* If Enter is pressed and requirement is met, exit loop
         if ch in (curses.KEY_ENTER, 10, 13):
             if all(requirements.values()):
-                #* Confirm password segment
+               #* Confirm password segment
 
                 reset_line(stdscr, 7, 0)
                 addstr(stdscr, 7, 0, "Password hidden", curses.color_pair(6))
@@ -147,13 +147,15 @@ def choose_master_password(stdscr, username: str):
                     )
                     move(
                         stdscr, 10, 18 + len(confirm_password)
-                    )  #* Move cursor to end of confirm password
+                    ) #* Move cursor to end of confirm password
                     stdscr.refresh()
-                    confirm_ch = getch(stdscr)  #* Get user key press for confirm password
+                    confirm_ch = getch(
+                        stdscr
+                    ) #* Get user key press for confirm password
                     if confirm_ch == curses.KEY_RESIZE:
                         continue
 
-                    #* Handle backspace
+                   #* Handle backspace
                     if confirm_ch in (curses.KEY_BACKSPACE, 127, 8):
                         confirm_password = confirm_password[:-1]
 
@@ -171,21 +173,21 @@ def choose_master_password(stdscr, username: str):
                             reset_line(stdscr, 10, 0)
                             confirm_password = ""
 
-                    #* Accepts printable ASCII characters, except for [\, ", '], so long as the user is allowed to type
+                   #* Accepts printable ASCII characters, except for [\, ", '], so long as the user is allowed to type
                     elif (32 <= confirm_ch <= 126) and (confirm_ch not in [92, 39, 34]):
                         confirm_password += chr(confirm_ch)
 
                 break
 
-        #* Toggle show/hide password on F2 key press
+       #* Toggle show/hide password on F2 key press
         elif ch == curses.KEY_F2:
             show_password = not show_password
 
-        #* Handle backspace
+       #* Handle backspace
         elif ch in (curses.KEY_BACKSPACE, 127, 8):
             master_password = master_password[:-1]
 
-        #* Accepts printable ASCII characters, except for [\, ", '], so long as the user is allowed to type
+       #* Accepts printable ASCII characters, except for [\, ", '], so long as the user is allowed to type
         elif (32 <= ch <= 126) and (ch not in [92, 39, 34]) and allow_typing:
             master_password += chr(ch)
 

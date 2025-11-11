@@ -41,7 +41,7 @@ def log_in(stdscr, welcome):
         if ch == curses.KEY_RESIZE:
             continue
 
-        if ch == curses.KEY_F2:  #* F2 key
+        if ch == curses.KEY_F2: #* F2 key
             show_password = not show_password
 
         elif ch == curses.KEY_UP:
@@ -70,43 +70,32 @@ def log_in(stdscr, welcome):
                 addstr(stdscr, 7, 0, msg, curses.color_pair(3))
                 continue
 
-            skip = True
-            username_hash = sha256(username.encode()).hexdigest()
-            password_hash = sha256(password.encode()).hexdigest()
-
-            for row in r:
-                if skip:
-                    skip = False  #* Skip the SQL row
-                    continue
-
-                if row[0] == username_hash and row[1] == password_hash:
-                    #* Successful login
-                    reset_line(stdscr, 7, 0)
-                    addstr(
-                        stdscr,
-                        7,
-                        0,
-                        welcome + username,
-                        curses.color_pair(2),
-                    )
-                    addstr(stdscr, 8, 0, "Press any key to continue...")
-                    getch(stdscr)
-                    break
+            if account_exists(username, password):
+               #* Successful login
+                reset_line(stdscr, 7, 0)
+                addstr(
+                    stdscr,
+                    7,
+                    0,
+                    welcome + username,
+                    curses.color_pair(2),
+                )
+                addstr(stdscr, 8, 0, "Press any key to continue...")
+                getch(stdscr)
+                break
             else:
-                #* Failed login
+               #* Failed login
                 reset_line(stdscr, 7, 0)
                 addstr(
                     stdscr, 7, 0, "Invalid username or password.", curses.color_pair(3)
                 )
                 continue
 
-            break
-
         else:
-            #* Edit mode
+           #* Edit mode
             editing = pos_to_data[current_pos]
             if editing == "username":
-                if 32 <= ch <= 126:  #* Printable ASCII characters
+                if 32 <= ch <= 126: #* Printable ASCII characters
                     username += chr(ch)
                     movements[current_pos][1] += 1
                 elif ch in (curses.KEY_BACKSPACE, 127, 8):

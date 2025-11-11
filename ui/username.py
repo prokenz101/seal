@@ -18,7 +18,7 @@ def choose_username(stdscr):
         addstr(stdscr, 1, 0, "Requirements:")
         allow_typing = True
 
-        #* Check if username meets length requirement
+       #* Check if username meets length requirement
         if len(username) < 3:
             addstr(
                 stdscr,
@@ -49,7 +49,7 @@ def choose_username(stdscr):
             )
             requirements["length"] = True
 
-        #* Check if username contains only lowercase letters and numbers
+       #* Check if username contains only lowercase letters and numbers
         if not all(c.islower() or c.isdigit() for c in username):
             addstr(
                 stdscr,
@@ -71,18 +71,18 @@ def choose_username(stdscr):
             requirements["alphanumeric_lowercase"] = True
 
         move(stdscr, 4, 0)
-        stdscr.clrtoeol()  #* Adds a new line
+        stdscr.clrtoeol() #* Adds a new line
 
         addstr(stdscr, 5, 0, "Username: " + username + " ")
 
-        move(stdscr, 5, 10 + len(username))  #* Move cursor to end of username
+        move(stdscr, 5, 10 + len(username)) #* Move cursor to end of username
         stdscr.refresh()
 
-        ch = getch(stdscr)  #* Get user key press
+        ch = getch(stdscr) #* Get user key press
         if ch == curses.KEY_RESIZE:
             continue
 
-        #* If Enter is pressed and requirement is met, exit loop
+       #* If Enter is pressed and requirement is met, exit loop
         if ch in (curses.KEY_ENTER, 10, 13):
             if all(requirements.values()):
                 if username_exists(username):
@@ -100,12 +100,11 @@ def choose_username(stdscr):
         elif ch in (curses.KEY_BACKSPACE, 127, 8):
             username = username[:-1]
 
-        #* Accepts only numbers and lowercase letters, so long as the user is allowed to type
+       #* Accepts only numbers and lowercase letters, so long as the user is allowed to type
         elif (32 <= ch <= 126) and allow_typing:
             username += chr(ch)
 
-    # TODO: Add username to file or database
-
+    reset_line(stdscr, 6, 0)
     reset_line(stdscr, 7, 0)
     addstr(
         stdscr,
