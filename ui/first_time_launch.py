@@ -56,5 +56,6 @@ def first_time_launch(stdscr):
 
         choose_username(stdscr)
     else:
-        #! Exiting...
+        curses.endwin()
+        exit()
         pass

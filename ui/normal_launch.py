@@ -70,4 +70,6 @@ def normal_launch(stdscr, welcome="Welcome back, "):
         normal_launch(stdscr)
     else:
         #! Exiting...
+        curses.endwin()
+        exit()
         pass
