@@ -34,23 +34,24 @@ def normal_launch(stdscr, welcome="Welcome back, "):
         addstr(stdscr, 9, 0, "Choose an option:")
         move(stdscr, 10, 0)
         stdscr.clrtoeol()
-        addstr(stdscr, 10, 2, "Log in", colors[0])
-        addstr(stdscr, 10, 11, "MySQL Setup", colors[1])
-        addstr(stdscr, 10, 25, "Exit", colors[2])
+        addstr(stdscr, 11, 1, "Log In", colors[0])
+        addstr(stdscr, 13, 1, "Add Account", colors[1])
+        addstr(stdscr, 15, 1, "MySQL Setup", colors[2])
+        addstr(stdscr, 17, 1, "Exit", colors[3])
         footer(
-            stdscr, "Use [◀] and [▶] arrow keys to navigate, and [Enter] to confirm."
+            stdscr, "Use [▲] and [▼] arrow keys to navigate, and [Enter] to confirm."
         )
 
         ch = getch(stdscr)  #* Wait for user key press
         if ch == curses.KEY_RESIZE:
             continue
 
-        if ch == curses.KEY_RIGHT:
+        if ch == curses.KEY_DOWN:
             index = colors.index(curses.color_pair(7) | curses.A_UNDERLINE)
-            if index < 2:
+            if index < 3:
                 colors[index] = curses.color_pair(5)
                 colors[index + 1] = curses.color_pair(7) | curses.A_UNDERLINE
-        elif ch == curses.KEY_LEFT:
+        elif ch == curses.KEY_UP:
             index = colors.index(curses.color_pair(7) | curses.A_UNDERLINE)
             if index > 0:
                 colors[index] = curses.color_pair(5)
@@ -66,8 +67,15 @@ def normal_launch(stdscr, welcome="Welcome back, "):
     if colors[0] == curses.color_pair(7) | curses.A_UNDERLINE:
         log_in(stdscr, welcome)
     elif colors[1] == curses.color_pair(7) | curses.A_UNDERLINE:
-        setup_mysql(stdscr)
+        from ui.username import choose_username
+
+        choose_username(stdscr)
         normal_launch(stdscr)
+
+    elif colors[2] == curses.color_pair(7) | curses.A_UNDERLINE:
+        sql_warning(stdscr)
+        normal_launch(stdscr)
+
     else:
         #! Exiting...
         curses.endwin()
