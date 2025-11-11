@@ -28,6 +28,19 @@ def account_settings(stdscr, username):
             continue
 
         if (
+            ch == curses.KEY_DOWN
+            and colors[0] == curses.color_pair(7) | curses.A_UNDERLINE
+        ):
+            colors[0] = curses.color_pair(5)
+            colors[1] = curses.color_pair(8) | curses.A_UNDERLINE
+
+        elif (
+            ch == curses.KEY_UP
+            and colors[1] == curses.color_pair(8) | curses.A_UNDERLINE
+        ):
+            colors[0] = curses.color_pair(7) | curses.A_UNDERLINE
+            colors[1] = curses.color_pair(3)
+
         elif ch in (curses.KEY_ENTER, 10, 13):
             phrase = ""
 
