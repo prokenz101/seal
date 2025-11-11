@@ -1,6 +1,8 @@
 import curses
-from core.cutils import addstr, getch, move, reset_line
+from core.sqlutils import username_exists
 from ui.master_password import choose_master_password
+from core.cutils import addstr, getch, move, reset_line
+
 
 def choose_username(stdscr):
     """Prompt the user to create a username."""

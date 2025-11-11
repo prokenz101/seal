@@ -23,7 +23,11 @@ def main(stdscr):
 
 if __name__ == "__main__":
     try:
-        from core.utils import exception_handler, is_all_modules_installed, accounts_exist
+        from core.utils import (
+            exception_handler,
+            is_all_modules_installed,
+            accounts_exist,
+        )
 
         if "idlelib.run" in modules:
             #! Program runs itself in a terminal if it is run in IDLE

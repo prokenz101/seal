@@ -1,8 +1,5 @@
 import curses
-from csv import writer
-from pickle import dump
-from hashlib import sha256
-from os import makedirs, urandom
+from core.utils import create_salt
 from core.cutils import addstr, getch, move, reset_line
 
 

@@ -1,6 +1,6 @@
 import curses
-from core.cutils import addstr, move, footer, getch
-from ui.mysql_setup import setup_mysql
+from core.cutils import addstr, move, footer, getch, addlines
+from ui.mysql_setup import sql_warning
 from ui.log_in import log_in
 
 def normal_launch(stdscr, welcome="Welcome back, "):

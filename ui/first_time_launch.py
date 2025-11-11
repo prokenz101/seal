@@ -1,5 +1,5 @@
 import curses
-from core.cutils import addstr, move, footer, getch
+from core.cutils import addlines, addstr, move, footer, getch
 from ui.username import choose_username
 from ui.mysql_setup import setup_mysql
 

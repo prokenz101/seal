@@ -1,10 +1,10 @@
 import curses
+from time import sleep
 import mysql.connector
-from core.cutils import addstr, move, footer, getch, reset_line
-from os import makedirs, urandom
 from pickle import dump
-from csv import writer
+from os import makedirs, urandom
 from core.encryption import get_fernet_key
+from core.cutils import addlines, addstr, move, footer, getch, reset_line
 
 
 def setup_mysql(stdscr):

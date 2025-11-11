@@ -1,7 +1,7 @@
 import curses
 from core.cutils import addstr, getch, move, reset_line, footer
-from csv import reader
-from hashlib import sha256
+from core.sqlutils import account_exists
+from ui.main_menu import main_menu
 
 
 def log_in(stdscr, welcome):
