@@ -1,5 +1,5 @@
 import curses
-from core.utils import exception_handler, rgb_to_curses_color
+from core.utils import exception_handler
 
 #* cutils -> utilities involving curses module
 
@@ -14,7 +14,6 @@ def setup_colors(stdscr):
         curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_BLACK)
         curses.init_pair(3, curses.COLOR_RED, curses.COLOR_BLACK)
 
-        curses.init_color(11, *rgb_to_curses_color(125, 229, 255))  #* teal
         curses.init_pair(4, 11, curses.COLOR_BLACK)
 
         curses.init_pair(5, curses.COLOR_WHITE, curses.COLOR_BLACK)
