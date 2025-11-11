@@ -26,6 +26,13 @@ def setup_colors(stdscr):
         )
 
 
+def check_size(stdscr):
+    """Check if terminal window is larger than 30x65 characters."""
+    max_y, max_x = stdscr.getmaxyx()
+    if max_y < 30 or max_x < 65:
+        raise curses.error("Terminal window is too small to display text.")
+
+
 def getch(stdscr):
     """Get a character from the user.
 
