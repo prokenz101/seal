@@ -85,9 +85,18 @@ def choose_username(stdscr):
         #* If Enter is pressed and requirement is met, exit loop
         if ch in (curses.KEY_ENTER, 10, 13):
             if all(requirements.values()):
-                break
+                if username_exists(username):
+                    addstr(
+                        stdscr,
+                        6,
+                        0,
+                        "This username is already in use.",
+                        curses.color_pair(1),
+                    )
+                else:
+                    break
 
-        #* Handle backspace
+       #* Handle backspace
         elif ch in (curses.KEY_BACKSPACE, 127, 8):
             username = username[:-1]
 
