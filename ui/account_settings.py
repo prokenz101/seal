@@ -68,19 +68,19 @@ def account_settings(stdscr, username):
                     "ALL stored passwords and data will be permanently lost.",
                     curses.color_pair(3),
                 )
-                addstr(stdscr, 12, 0, 'To confirm, please type the phrase "')
-                addstr(stdscr, 12, 36, "DELETE MY ACCOUNT", curses.A_UNDERLINE)
-                addstr(stdscr, 12, 53, '" below:')
+                addstr(
+                    stdscr, 12, 0, "To confirm, please type your master password below."
+                )
                 footer(
                     stdscr,
                     "Press [ESC] to go back, and [Enter] to continue.",
                     attr=curses.A_UNDERLINE,
                 )
 
+                mp = ""
                 while True:
-                    reset_line(stdscr, 14, 0)
-                    addstr(stdscr, 14, 0, "> " + phrase)
-                    move(stdscr, 14, 2 + len(phrase))
+                    addstr(stdscr, 14, 0, "> " + "*" * len(mp), reset=True)
+                    move(stdscr, 14, 2 + len(mp))
                     stdscr.refresh()
 
                     ch = getch(stdscr)
@@ -88,7 +88,9 @@ def account_settings(stdscr, username):
                         continue
 
                     if ch in (curses.KEY_ENTER, 10, 13):
-                        if phrase == "DELETE MY ACCOUNT":
+                        if mp == master_password:
+                            #* Deleting account
+
                             from core.sqlutils import delete_user
 
                             delete_user(username)
@@ -119,7 +121,7 @@ def account_settings(stdscr, username):
                                 stdscr,
                                 16,
                                 0,
-                                "Phrase did not match. Account not deleted.",
+                                "Incorrect password. Account not deleted.",
                                 curses.color_pair(3),
                             )
                             addstr(stdscr, 17, 0, "Press any key to go back...")
@@ -132,11 +134,13 @@ def account_settings(stdscr, username):
                         break
 
                     elif ch in (curses.KEY_BACKSPACE, 127, 8):
-                        phrase = phrase[:-1]
+                        mp = mp[:-1]
 
-                    elif (64 <= ch <= 90) or (97 <= ch <= 122) or ch == 32:
-                        phrase += chr(ch).upper()
-
+                    elif (
+                        (32 <= ch <= 126) and (ch not in [92, 39, 34]) and len(mp) < 64
+                    ):
+                        mp += chr(ch)
+            
             else:
                 break
 
