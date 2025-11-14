@@ -37,7 +37,7 @@ def add_credential(
         (0, "          [F3] Suggest strong password"),
         (43, "[F4] Use strong password", curses.color_pair(6) | curses.A_ITALIC),
     )
-    hide_or_show = "Show"
+    hide_or_show = "Hide"
 
     while True:
         addstr(stdscr, 0, 0, "seal", curses.color_pair(4) | curses.A_BOLD)
