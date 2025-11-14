@@ -61,7 +61,7 @@ def accounts_exist():
 def is_all_modules_installed():
     """Check if all required modules are installed."""
 
-    modules = {"windows_curses": False, "cryptography": False, "mysql.connector": False}
+    modules = {"windows_curses": False, "cryptography": False, "mysql.connector": False, "pyperclip": False}
     #* Testing if individual modules are installed
 
     try:
@@ -82,6 +82,13 @@ def is_all_modules_installed():
         from mysql.connector import connect
 
         modules["mysql.connector"] = True
+    except ModuleNotFoundError:
+        pass
+
+    try:
+        from pyperclip import copy
+
+        modules["pyperclip"] = True
     except ModuleNotFoundError:
         pass
 
