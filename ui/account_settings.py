@@ -1,8 +1,8 @@
 import curses
-from core.cutils import addstr, getch, footer, move, reset_line
+from core.cutils import addstr, getch, footer, move
 
 
-def account_settings(stdscr, username):
+def account_settings(stdscr, username, master_password):
 
     #! Clear the terminal
     stdscr.clear()
@@ -14,8 +14,14 @@ def account_settings(stdscr, username):
 
     while True:
         addstr(stdscr, 0, 0, "seal", curses.color_pair(4) | curses.A_BOLD)
-        addstr(stdscr, 0, 4, f" - Logged in as {username}", curses.A_BOLD)
-        addstr(stdscr, 2, 0, "Account Settings", curses.A_BOLD)
+        addstr(
+            stdscr,
+            0,
+            4,
+            f" — Logged in as {username} — Account Settings",
+            curses.A_BOLD,
+        )
+        addstr(stdscr, 2, 0, "Options:", curses.A_BOLD)
 
         addstr(stdscr, 4, 1, "Go back", colors[0])
         addstr(stdscr, 6, 1, "Delete account", colors[1])
@@ -42,7 +48,9 @@ def account_settings(stdscr, username):
             colors[1] = curses.color_pair(3)
 
         elif ch in (curses.KEY_ENTER, 10, 13):
-            phrase = ""
+            if colors[0] == curses.color_pair(7) | curses.A_UNDERLINE:
+                stdscr.clear()
+                break
 
             if colors[1] == curses.color_pair(8) | curses.A_UNDERLINE:
                 addstr(stdscr, 8, 0, "Warning:", curses.color_pair(3) | curses.A_BOLD)
@@ -95,20 +103,20 @@ def account_settings(stdscr, username):
 
                             delete_user(username)
 
-                            reset_line(stdscr, 16, 0)
                             addstr(
                                 stdscr,
                                 16,
                                 0,
                                 "Account deleted successfully.",
                                 curses.color_pair(2) | curses.A_BOLD,
+                                reset=True,
                             )
                             addstr(stdscr, 17, 0, "Press any key to continue...")
                             getch(stdscr)
 
                             from core.utils import accounts_exist
-                            from ui.normal_launch import normal_launch
-                            from ui.first_time_launch import first_time_launch
+                            from ui.launch.normal_launch import normal_launch
+                            from ui.launch.first_time_launch import first_time_launch
 
                             if accounts_exist():
                                 normal_launch(stdscr, "Welcome back, ")
@@ -116,20 +124,20 @@ def account_settings(stdscr, username):
                                 first_time_launch(stdscr)
                                 normal_launch(stdscr, "Welcome, ")
                         else:
-                            reset_line(stdscr, 16, 0)
                             addstr(
                                 stdscr,
                                 16,
                                 0,
                                 "Incorrect password. Account not deleted.",
                                 curses.color_pair(3),
+                                reset=True,
                             )
                             addstr(stdscr, 17, 0, "Press any key to go back...")
                             getch(stdscr)
                             stdscr.clear()
                             break
 
-                    elif ch == 27: #* ESC key
+                    elif ch == 27:  #* ESC key
                         stdscr.clear()
                         break
 
@@ -144,6 +152,6 @@ def account_settings(stdscr, username):
             else:
                 break
 
-    if colors[0] == curses.color_pair(7) | curses.A_UNDERLINE:
-        stdscr.clear()
-        return
+        elif ch == 27:  #* ESC key
+            stdscr.clear()
+            break

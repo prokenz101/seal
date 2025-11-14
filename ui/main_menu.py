@@ -1,10 +1,10 @@
 import curses
 from core.cutils import addlines, addstr, getch, footer
-from ui.locker import locker
+from ui.locker.locker import locker
 from ui.account_settings import account_settings
 
 
-def main_menu(stdscr, username):
+def main_menu(stdscr, username, master_password):
     """Display the main menu after successful login."""
 
     #! Clear the terminal
@@ -19,7 +19,7 @@ def main_menu(stdscr, username):
 
     while True:
         addstr(stdscr, 0, 0, "seal", curses.color_pair(4) | curses.A_BOLD)
-        addstr(stdscr, 0, 4, f" - Logged in as {username}", curses.A_BOLD)
+        addstr(stdscr, 0, 4, f" — Logged in as {username} — Main Menu", curses.A_BOLD)
         addstr(stdscr, 2, 0, "Choose an option:")
         addlines(
             stdscr,
@@ -81,15 +81,14 @@ def main_menu(stdscr, username):
             colors[pos_idx[current_pos]] = curses.color_pair(7)
 
         elif ch in (curses.KEY_ENTER, 10, 13):
-            if current_pos != "settings":
-                break
+            if current_pos == "settings":
+                account_settings(stdscr, username, master_password)
+            elif current_pos == "enter_seal":
+                locker(stdscr, username, master_password)
             else:
-                account_settings(stdscr, username)
+                break
 
-    if current_pos == "enter_seal":
-        locker(stdscr)
 
-    elif current_pos == "log_out":
-        from ui.normal_launch import normal_launch
+    from ui.launch.normal_launch import normal_launch
 
-        normal_launch(stdscr, welcome="Welcome back, ")
+    normal_launch(stdscr, welcome="Welcome back, ")

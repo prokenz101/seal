@@ -11,8 +11,8 @@ def main(stdscr):
     check_size(stdscr)
     setup_colors(stdscr)
 
-    from ui.first_time_launch import first_time_launch
-    from ui.normal_launch import normal_launch
+    from ui.launch.first_time_launch import first_time_launch
+    from ui.launch.normal_launch import normal_launch
 
     if accounts_exist():
         normal_launch(stdscr)

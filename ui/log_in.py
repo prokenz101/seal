@@ -1,5 +1,5 @@
 import curses
-from core.cutils import addstr, getch, move, reset_line, footer
+from core.cutils import addstr, getch, move, reset_footer, reset_line, footer
 from core.sqlutils import account_exists
 from ui.main_menu import main_menu
 
@@ -12,29 +12,27 @@ def log_in(stdscr, welcome):
     username = ""
     password = ""
     show_password = False
-    movements = [[2, 10], [5, 10]]
+    movements = [[4, 10], [7, 10]]
     current_pos = 0
     pos_to_data = {0: "username", 1: "password"}
 
     while True:
-        addstr(stdscr, 0, 0, "Log in", curses.A_BOLD)
-        move(stdscr, 1, 0)
-        stdscr.clrtoeol()
+        addstr(stdscr, 0, 0, "seal", curses.color_pair(4) | curses.A_BOLD)
+        addstr(stdscr, 0, 4, f" — Log in", curses.A_BOLD)
+        addstr(stdscr, 2, 0, "Log in:", curses.A_BOLD)
         footer(
             stdscr,
-            "Use [▲] and [▼] arrow keys to navigate, and [Enter] to confirm.",
+            "Use [▲] and [▼] arrow keys to navigate, [ESC] to go back, and [Enter] to confirm.",
         )
 
-        addstr(stdscr, 2, 0, f"Username: {username}")
-        move(stdscr, 3, 0)
-        stdscr.clrtoeol()
+        addstr(stdscr, 4, 0, f"Username: {username}")
 
         if show_password:
-            addstr(stdscr, 4, 0, "Press [F2] to hide password", curses.color_pair(6))
-            addstr(stdscr, 5, 0, f"Password: {password}")
+            addstr(stdscr, 6, 0, "Press [F2] to hide password", curses.color_pair(6))
+            addstr(stdscr, 7, 0, f"Password: {password}")
         else:
-            addstr(stdscr, 4, 0, "Press [F2] to show password", curses.color_pair(6))
-            addstr(stdscr, 5, 0, f"Password: {'*' * len(password)}")
+            addstr(stdscr, 6, 0, "Press [F2] to show password", curses.color_pair(6))
+            addstr(stdscr, 7, 0, f"Password: {'*' * len(password)}")
 
         move(stdscr, *movements[current_pos])
         ch = getch(stdscr)
@@ -66,30 +64,33 @@ def log_in(stdscr, welcome):
                 msg = "Please type a valid password."
 
             if msg:
-                reset_line(stdscr, 7, 0)
-                addstr(stdscr, 7, 0, msg, curses.color_pair(3))
+                addstr(stdscr, 9, 0, msg, curses.color_pair(3), reset=True)
                 continue
 
             if account_exists(username, password):
                #* Successful login
-                reset_line(stdscr, 7, 0)
                 addstr(
                     stdscr,
-                    7,
+                    9,
                     0,
                     welcome + username,
                     curses.color_pair(2),
+                    reset=True
                 )
-                addstr(stdscr, 8, 0, "Press any key to continue...")
+                addstr(stdscr, 10, 0, "Press any key to continue...")
+                reset_footer(stdscr)
                 getch(stdscr)
-                break
+                main_menu(stdscr, username, password)
             else:
                #* Failed login
-                reset_line(stdscr, 7, 0)
                 addstr(
-                    stdscr, 7, 0, "Invalid username or password.", curses.color_pair(3)
+                    stdscr, 9, 0, "Invalid username or password.", curses.color_pair(3), reset=True
                 )
                 continue
+
+        elif ch == 27:  #* ESC key
+            stdscr.clear()
+            break
 
         else:
            #* Edit mode
@@ -113,5 +114,3 @@ def log_in(stdscr, welcome):
                         movements[current_pos][1] -= 1
 
             reset_line(stdscr, movements[current_pos][0], 0)
-
-    main_menu(stdscr, username)
