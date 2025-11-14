@@ -1,5 +1,5 @@
-from pickle import load
 import mysql.connector
+from pickle import load
 from hashlib import sha256
 from core.utils import delete_salt
 from core.encryption import get_fernet_key
@@ -94,10 +94,7 @@ def connect_mysql():
     host, port, sqlusername, sqlpassword = get_mysql_credentials()
 
     conn = mysql.connector.connect(
-        host=host,
-        port=int(port),
-        user=sqlusername,
-        password=sqlpassword
+        host=host, port=int(port), user=sqlusername, password=sqlpassword
     )
 
     return conn
@@ -107,7 +104,7 @@ def account_exists(username, password):
     """Verify user credentials against the database."""
 
     password_hash = sha256(password.encode()).hexdigest()
-    
+
     conn = connect_mysql()
     cur = conn.cursor()
 
@@ -123,7 +120,7 @@ def account_exists(username, password):
     )
     result = cur.fetchone()
     conn.close()
-    
+
     return result is not None
 
 
@@ -141,12 +138,14 @@ def username_exists(username):
     cur.execute("SELECT * FROM users WHERE username = %s", (username,))
     result = cur.fetchone()
     conn.close()
-    
+
     return result is not None
 
 
-def get_table(conn, tablename, database=None, select_command=None):
-    """Tabulates and returns a table."""
+def add_credential(conn, username, account, acc_username, acc_password):
+    """Add a new credential entry to the locker table."""
+
+    cur = conn.cursor()
     cur.execute(
         """
         INSERT INTO locker (owner, account, username, password)
@@ -154,55 +153,196 @@ def get_table(conn, tablename, database=None, select_command=None):
     """,
         (username, account, acc_username, acc_password),
     )
+    conn.commit()
+    conn.close()
 
+
+def get_credentials_row_count(username, page, page_size: int = 12):
+    """Returns the number of rows in a specific page for the user's credentials.
+
+    - page: 1-based page index
+    - page_size: items per page (default 12)
+    """
+
+    conn = connect_mysql()
     cursor = conn.cursor()
-    if database is not None:
-        cursor.execute("USE {}".format(database))
-    else:
-        return
-    cursor.execute("SELECT COUNT(*) FROM credentials WHERE username = %s", (username,))
     cursor.execute("USE seal")
     cursor.execute("SELECT COUNT(*) FROM credentials WHERE username = %s", (username,))
+    count = cursor.fetchone()
+    conn.close()
+    if count is None:
+        return 0
+
+    total = int(count[0])  # type: ignore
+    if total == 0:
+        return 0
+
+    # Clamp page bounds
+    total_pages = (total + page_size - 1) // page_size
+    if page < 1:
+        page = 1
+    elif page > total_pages:
+        page = total_pages
+
+    start_idx = (page - 1) * page_size
+    remaining = max(0, total - start_idx)
+    return min(page_size, remaining)
+
+
+def get_page_count(username, page_size: int = 12) -> int:
+    """Returns total number of pages for the user's credentials.
+
+    - page_size: items per page (default 12)
+    """
+
+    conn = connect_mysql()
+    cursor = conn.cursor()
+    cursor.execute("USE seal")
+    cursor.execute("SELECT COUNT(*) FROM credentials WHERE username = %s", (username,))
+    count = cursor.fetchone()
+    conn.close()
+
+    total = int(count[0]) if count else 0  # type: ignore[index,arg-type]
+    if total == 0:
+        return 0
+    return (total + page_size - 1) // page_size
+
+
+def get_credential_row(fernet, username, row_number):
+    """Returns the decrypted account, user ID, and password
+    for a specific row (1-based) belonging to the given username.
+    """
+    conn = connect_mysql()
+    cursor = conn.cursor()
+    cursor.execute("USE seal")
+
     cursor.execute(
         "SELECT id, account, cred_username, cred_password "
         "FROM credentials WHERE username = %s",
         (username,),
     )
 
+    results = cursor.fetchall()
+    conn.close()
+
+    if not results or row_number <= 0 or row_number > len(results):
+        return None
+
+    row = results[row_number - 1]
+    id = row[0]
+
+    try:
+        account = fernet.decrypt(str(row[1]).encode()).decode()
+    except Exception:
+        account = "[decryption failed]"
+
+    try:
+        user_id = fernet.decrypt(str(row[2]).encode()).decode()
+    except Exception:
+        user_id = "[decryption failed]"
+
+    try:
+        password = fernet.decrypt(str(row[3]).encode()).decode()
+    except Exception:
+        password = "[decryption failed]"
+
+    return account, user_id, password, id
+
+
+def get_table(
+    fernet,
+    tablename,
+    database,
+    page,
+    shown_row=0,
+    hide=True,
+    select_command=None,
+):
+    """Tabulates and returns a table with truncation.
+    Decrypts all fields using decrypt()."""
+
+    conn = connect_mysql()
+    cursor = conn.cursor()
+    cursor.execute(f"USE {database}")
+
     if select_command is not None:
-        cursor.execute(select_command)
+        cursor.execute(*select_command)
     else:
-        cursor.execute("SELECT * FROM {}".format(tablename))
+        cursor.execute(f"SELECT * FROM {tablename}")
 
     results = cursor.fetchall()
 
-    widths = []
-    columns = []
+    total_rows = len(results)
+    if total_rows == 0:
+        conn.close()
+        return "(empty table)\nPage (0/0)"
+
+    page_size = 12
+    total_pages = (total_rows + page_size - 1) // page_size
+    if page < 1:
+        page = 1
+    elif page > total_pages:
+        page = total_pages
+
+    start_idx = (page - 1) * page_size
+    end_idx = min(start_idx + page_size, total_rows)
+    page_results = results[start_idx:end_idx]
+
+    limits = {
+        "App or website name": 20,
+        "User ID": 20,
+        "Password": 20,
+    }
+
+    #* Column names
+    columns = [cd[0] for cd in (cursor.description or [])]
+
+    widths = [len(name) for name in columns]
+
+    #* Decrypt once and apply truncation only while updating widths
+    processed_rows = []
+    for row_index, row in enumerate(page_results, start=1):
+        processed_row = []
+        for col_idx, raw_value in enumerate(row):
+            col_name = columns[col_idx]
+            limit = limits.get(col_name, None)
+            value_str = str(raw_value)
+            if col_name.lower() == "password":
+                if hide or shown_row <= 0 or row_index != shown_row:
+                    value_str = "*" * 16
+                else:
+                    try:
+                        value_str = fernet.decrypt(value_str.encode()).decode()
+                    except Exception:
+                        value_str = "[decryption failed]"
+            else:
+                try:
+                    value_str = fernet.decrypt(value_str.encode()).decode()
+                except Exception:
+                    value_str = "[decryption failed]"
+
+            if limit and len(value_str) > limit:
+                value_str = value_str[: limit - 3] + "..."
+
+            widths[col_idx] = max(widths[col_idx], len(value_str))
+            if limit:
+                widths[col_idx] = min(widths[col_idx], limit)
+
+            processed_row.append(value_str)
+        processed_rows.append(processed_row)
+
     pipe = "|"
     separator = "+"
-
-    index = 0
-    for cd in cursor.description if cursor.description is not None else []:
-        widths.append(
-            max(
-                max(list(map(lambda x: len(str(tuple(x)[index])), results))), len(cd[0])
-            )
-        )
-        columns.append(cd[0])
-        index += 1
-
     for w in widths:
-        pipe += " %-" + "%ss |" % (w,)
-        separator += "-" * w + "--+"
+        pipe += " %-" + f"{w}s |"
+        separator += "-" * (w + 2) + "+"
 
-    table = ""
-
-    table += separator + "\n"
-    table += pipe % tuple(columns) + "\n"
-    table += separator + "\n"
-    for row in results:
-        table += pipe % row + "\n"
-    table += separator + "\n"
+    #* Assemble the table
+    table_lines = [separator, pipe % tuple(columns), separator]
+    for processed_row in processed_rows:
+        table_lines.append(pipe % tuple(processed_row))
+    table_lines.append(separator)
+    table_lines.append(f"Page ({page}/{total_pages})")
 
     conn.close()
-    return table
+    return "\n".join(table_lines)
