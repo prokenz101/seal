@@ -15,8 +15,13 @@ def add_user(username, password):
 
     cur.execute("CREATE DATABASE IF NOT EXISTS seal")
     cur.execute("USE seal")
-    cur.execute("CREATE TABLE IF NOT EXISTS users (username VARCHAR(16) PRIMARY KEY, password_hash VARCHAR(64))")
-    cur.execute("INSERT INTO users (username, password_hash) VALUES ('{}', '{}')".format(username, password_hash))
+    cur.execute(
+        "CREATE TABLE IF NOT EXISTS users (username VARCHAR(16) PRIMARY KEY, password_hash VARCHAR(64))"
+    )
+    cur.execute(
+        "INSERT INTO users (username, password_hash) VALUES (%s, %s)",
+        (username, password_hash),
+    )
     conn.commit()
     conn.close()
 
@@ -33,7 +38,8 @@ def delete_user(username):
         conn.close()
         return
 
-    cur.execute("DELETE FROM users WHERE username = '{}'".format(username))
+    cur.execute("DELETE FROM credentials WHERE username = %s", (username,))
+    cur.execute("DELETE FROM users WHERE username = %s", (username,))
     conn.commit()
     conn.close()
 
@@ -111,7 +117,10 @@ def account_exists(username, password):
         conn.close()
         return False
 
-    cur.execute("SELECT * FROM users WHERE username = '{}' AND password_hash = '{}'".format(username, password_hash))
+    cur.execute(
+        "SELECT * FROM users WHERE username = %s AND password_hash = %s",
+        (username, password_hash),
+    )
     result = cur.fetchone()
     conn.close()
     
@@ -129,7 +138,7 @@ def username_exists(username):
     except mysql.connector.Error:
         return False
 
-    cur.execute("SELECT * FROM users WHERE username = '{}'".format(username))
+    cur.execute("SELECT * FROM users WHERE username = %s", (username,))
     result = cur.fetchone()
     conn.close()
     
@@ -138,12 +147,27 @@ def username_exists(username):
 
 def get_table(conn, tablename, database=None, select_command=None):
     """Tabulates and returns a table."""
+    cur.execute(
+        """
+        INSERT INTO locker (owner, account, username, password)
+        VALUES (%s, %s, %s, %s)
+    """,
+        (username, account, acc_username, acc_password),
+    )
 
     cursor = conn.cursor()
     if database is not None:
         cursor.execute("USE {}".format(database))
     else:
         return
+    cursor.execute("SELECT COUNT(*) FROM credentials WHERE username = %s", (username,))
+    cursor.execute("USE seal")
+    cursor.execute("SELECT COUNT(*) FROM credentials WHERE username = %s", (username,))
+    cursor.execute(
+        "SELECT id, account, cred_username, cred_password "
+        "FROM credentials WHERE username = %s",
+        (username,),
+    )
 
     if select_command is not None:
         cursor.execute(select_command)
