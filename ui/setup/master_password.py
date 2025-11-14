@@ -194,7 +194,7 @@ def choose_master_password(stdscr, username: str):
                             addstr(stdscr, 4, 0, "You may now log in.")
                             addstr(stdscr, 5, 0, "Press any key to continue...")
                             getch(stdscr)
-                            normal_launch(stdscr, welcome=f"Welcome, {username}!")
+                            normal_launch(stdscr, welcome=f"Welcome, ")
                             break
                         else:
                             addstr(
