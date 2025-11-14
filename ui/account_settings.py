@@ -1,5 +1,5 @@
 import curses
-from core.cutils import addstr, getch, footer, move
+from core.cutils import addstr, getch, footer, move, reset_footer
 
 
 def account_settings(stdscr, username, master_password):
@@ -96,6 +96,8 @@ def account_settings(stdscr, username, master_password):
                         continue
 
                     if ch in (curses.KEY_ENTER, 10, 13):
+                        reset_footer(stdscr)
+
                         if mp == master_password:
                             #* Deleting account
 
