@@ -112,3 +112,10 @@ def delete_salt(username):
             exception_handler(
                 message=f"Failed to delete salt file for user '{username}'.", exception=e
             )
+
+
+def generate_password(length=20):
+    alphabet = ascii_letters + digits + "._$%"
+    random_bytes = urandom(length)
+    password = ''.join(alphabet[b % len(alphabet)] for b in random_bytes)
+    return password
