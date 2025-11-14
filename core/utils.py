@@ -17,12 +17,6 @@ def exception_handler(message="Something went wrong.", exception=None):
     exit()
 
 
-def rgb_to_curses_color(r, g, b):
-    """Convert RGB color values to curses color format."""
-
-    return int(r * 1000 / 255), int(g * 1000 / 255), int(b * 1000 / 255)
-
-
 def accounts_exist():
     """Check if any user accounts exist."""
 
