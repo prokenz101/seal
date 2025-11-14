@@ -104,6 +104,15 @@ def reset_line(stdscr, y, x):
     stdscr.clrtoeol()
 
 
+def reset_line_bottom(stdscr, y, x):
+    """Clear a specific line relative to the bottom of the screen."""
+
+    max_y = stdscr.getmaxyx()[0]
+    target_y = max_y - 1 - y
+    move(stdscr, target_y, x)
+    stdscr.clrtoeol()
+
+
 def footer(stdscr, message, attr=curses.A_NORMAL):
     """Display a footer message at the bottom of the screen."""
 
@@ -111,3 +120,22 @@ def footer(stdscr, message, attr=curses.A_NORMAL):
     reset_line(stdscr, max_y - 1, 0)
     addstr(stdscr, max_y - 1, 0, message, attr)
     stdscr.refresh()
+
+
+def reset_footer(stdscr):
+    """Clear the footer line."""
+
+    max_y = stdscr.getmaxyx()[0]
+    reset_line(stdscr, max_y - 1, 0)
+
+
+def addstr_bottom(stdscr, y, x, message, attr=curses.A_NORMAL):
+    """Add a string relative to the bottom of the screen."""
+
+    max_y = stdscr.getmaxyx()[0]
+    max_y, max_x = stdscr.getmaxyx()
+    target_y = max_y - 1 - y
+    if 0 <= target_y < max_y and 0 <= x + len(message) < max_x:
+        stdscr.addstr(target_y, x, message, attr)
+    else:
+        raise curses.error("Terminal window is too small to display text.")
