@@ -15,6 +15,15 @@ def exception_handler(message="Something went wrong.", exception=None):
         print("\033[93mFull error details:\033[0m")
         print(exception)
         print()
+
+        #* Specific MySQL related error
+        if str(exception) == "Authentication plugin 'caching_sha2_password' is not supported":
+            print("\033[92mTip:\033[0m")
+            print("\033[93m1. Try uninstalling mysql.connector with:\033[0m")
+            print("   '\033[96mpip uninstall mysql.connector\033[0m'")
+            print("\033[93m2. Then, install mysql-connector-python with:\033[0m")
+            print("   '\033[96mpip install mysql-connector-python\033[0m'")
+
     exit()
 
 
