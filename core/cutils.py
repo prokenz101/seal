@@ -65,11 +65,13 @@ def move(stdscr, y, x):
         raise curses.error("Terminal window is too small to display text.")
 
 
-def addstr(stdscr, y, x, string, attr=curses.A_NORMAL):
+def addstr(stdscr, y, x, string, attr=curses.A_NORMAL, reset=False):
     """Add a string to the specified position without going out of bounds."""
 
     max_y, max_x = stdscr.getmaxyx()
     if 0 <= y < max_y and 0 <= x + len(string) < max_x:
+        if reset:
+            reset_line(stdscr, y, x)
         stdscr.addstr(y, x, string, attr)
     else:
         raise curses.error("Terminal window is too small to display text.")
