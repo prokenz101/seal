@@ -5,7 +5,7 @@ from sys import modules
 def main(stdscr):
     """Main entry point."""
 
-   #* Start seal
+    #* Start seal
     from core.cutils import setup_colors, check_size
 
     check_size(stdscr)
