@@ -1,7 +1,7 @@
 import mysql.connector
 from pickle import load
 from hashlib import sha256
-from core.utils import delete_salt
+from core.utils import delete_salt, update_salt
 from core.encryption import get_fernet_key
 
 
@@ -56,6 +56,89 @@ def delete_user(username):
     conn.close()
 
     delete_salt(username)
+
+
+def change_username(old_username, new_username):
+    """Change a user's username in the database."""
+
+    conn = connect_mysql()
+    cur = conn.cursor()
+
+    try:
+        cur.execute("USE seal")
+    except mysql.connector.Error:
+        conn.close()
+        return
+
+    cur.execute(
+        "UPDATE users SET username = %s WHERE username = %s",
+        (new_username, old_username),
+    )
+    cur.execute(
+        "UPDATE credentials SET username = %s WHERE username = %s",
+        (new_username, old_username),
+    )
+    conn.commit()
+    conn.close()
+
+    update_salt(old_username, new_username)
+
+
+def change_master_password(username, old_password, new_password):
+    """Change a user's master password in the database."""
+
+    #* Verify old credentials
+    if not account_exists(username, old_password):
+        return False
+
+    salt_file = f"data/salts/{username}_salt.dat"
+    f_old = get_fernet_key(old_password, salt_file)
+    f_new = get_fernet_key(new_password, salt_file)
+
+    conn = connect_mysql()
+    cur = conn.cursor()
+    try:
+        cur.execute("USE seal")
+        cur.execute(
+            "SELECT id, account, cred_username, cred_password FROM credentials WHERE username = %s",
+            (username,),
+        )
+        rows = cur.fetchall()
+
+        #* Decrypt all existing entries
+        decrypted = []
+        for id, acc, u, p in rows:
+            try:
+                d_acc = f_old.decrypt(str(acc).encode()).decode()
+                d_user = f_old.decrypt(str(u).encode()).decode()
+                d_pass = f_old.decrypt(str(p).encode()).decode()
+            except Exception:
+                conn.close()
+                return False
+            decrypted.append((id, d_acc, d_user, d_pass))
+
+        cur.execute("DELETE FROM credentials WHERE username = %s", (username,))
+
+        for id, d_acc, d_user, d_pass in decrypted:
+            enc_acc = f_new.encrypt(d_acc.encode()).decode()
+            enc_user = f_new.encrypt(d_user.encode()).decode()
+            enc_pass = f_new.encrypt(d_pass.encode()).decode()
+            cur.execute(
+                "INSERT INTO credentials VALUES (%s, %s, %s, %s, %s)",
+                (username, id, enc_acc, enc_user, enc_pass),
+            )
+
+        #* Update master password hash
+        new_hash = sha256(new_password.encode()).hexdigest()
+        cur.execute(
+            "UPDATE users SET password_hash = %s WHERE username = %s",
+            (new_hash, username),
+        )
+
+        conn.commit()
+
+    finally:
+        conn.close()
 
 
 def get_usernames():

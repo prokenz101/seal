@@ -18,42 +18,86 @@ def account_settings(stdscr, username, master_password):
             stdscr,
             0,
             4,
-            f" — Logged in as {username} — Account Settings",
+            f" — Logged in as {username if new_username == '' else new_username} — Account Settings",
             curses.A_BOLD,
         )
         addstr(stdscr, 2, 0, "Options:", curses.A_BOLD)
 
-        addstr(stdscr, 4, 1, "Go back", colors[0])
-        addstr(stdscr, 6, 1, "Delete account", colors[1])
-        footer(
-            stdscr, "Use [▲] and [▼] arrow keys to navigate, and [Enter] to confirm."
-        )
+        addstr(stdscr, 4, 1, "Go back", colors[0][colors[0][2]])
+        addstr(stdscr, 6, 1, "Change username", colors[1][colors[1][2]])
 
-        ch = getch(stdscr)
+        )
+        reset_line(stdscr, 9, 0)
+        if not continued:
+            addstr(stdscr, 10, 1, "Delete account", colors[3][colors[3][2]], reset=True)
+            footer(
+                stdscr,
+                "Use [▲] and [▼] arrow keys to navigate, and [Enter] to confirm.",
+            )
+
+            ch = getch(stdscr)
+        else:
+            ch = continued
+
         if ch == curses.KEY_RESIZE:
             continue
 
-        if (
-            ch == curses.KEY_DOWN
-            and colors[0] == curses.color_pair(7) | curses.A_UNDERLINE
-        ):
-            colors[0] = curses.color_pair(5)
-            colors[1] = curses.color_pair(8) | curses.A_UNDERLINE
+        if ch == curses.KEY_DOWN:
+            if current_pos < 3:
+                colors[current_pos][2] = 1
+                current_pos += 1
+                colors[current_pos][2] = 0
 
-        elif (
-            ch == curses.KEY_UP
-            and colors[1] == curses.color_pair(8) | curses.A_UNDERLINE
-        ):
-            colors[0] = curses.color_pair(7) | curses.A_UNDERLINE
-            colors[1] = curses.color_pair(3)
+        elif ch == curses.KEY_UP:
+            if current_pos > 0:
+                colors[current_pos][2] = 1
+                current_pos -= 1
+                colors[current_pos][2] = 0
 
         elif ch in (curses.KEY_ENTER, 10, 13):
-            if colors[0] == curses.color_pair(7) | curses.A_UNDERLINE:
+            if current_pos == 0:  #* Go back
                 stdscr.clear()
                 break
 
-            if colors[1] == curses.color_pair(8) | curses.A_UNDERLINE:
-                addstr(stdscr, 8, 0, "Warning:", curses.color_pair(3) | curses.A_BOLD)
+            elif current_pos == 1:  #* Change username
+                if not continued:
+                    new_username = choose_username(stdscr, username_only=True)
+                    if new_username is None:
+                        continue
+
+                    stdscr.clear()
+                    continued = curses.KEY_ENTER
+                else:
+                    continued = None
+
+                    #* Changing username
+                    change_username(username, new_username)
+
+                    reset_line(stdscr, 10, 0)
+                    addstr(
+                        stdscr,
+                        8,
+                        0,
+                        "  New username will be set to:",
+                        curses.color_pair(2) | curses.A_BOLD,
+                        reset=True,
+                    )
+                    addstr(stdscr, 8, 31, new_username, curses.A_BOLD)
+                    addstr(
+                        stdscr,
+                        10,
+                        0,
+                        "  To apply changes, please restart the application.",
+                        curses.A_BOLD,
+                        reset=True,
+                    )
+                    addstr(stdscr, 11, 0, "  Press any key to exit...", reset=True)
+                    getch(stdscr)
+
+                    curses.endwin()
+                    exit()
+
+            elif current_pos == 2:  #* Change master password
                 addstr(
                     stdscr,
                     9,

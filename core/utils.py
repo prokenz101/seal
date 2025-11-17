@@ -131,6 +131,21 @@ def delete_salt(username):
             )
 
 
+def update_salt(old_username, new_username):
+    """Update the salt file when the username changes."""
+
+    old_salt_path = f"data/salts/{old_username}_salt.dat"
+    new_salt_path = f"data/salts/{new_username}_salt.dat"
+
+    if path.exists(old_salt_path):
+        try:
+            rename(old_salt_path, new_salt_path)
+        except Exception as e:
+            exception_handler(
+                message=f"Failed to update salt file from '{old_username}' to '{new_username}'.", exception=e
+            )
+
+
 def generate_password(length=20):
     alphabet = ascii_letters + digits + "._$%"
     random_bytes = urandom(length)
