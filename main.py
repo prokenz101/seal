@@ -6,9 +6,9 @@ def main(stdscr):
     """Main entry point."""
 
     #* Start seal
-    from core.cutils import setup_colors, check_size
+    from core.cutils import setup_colors, check_terminal_size
 
-    check_size(stdscr)
+    check_terminal_size(stdscr)
     setup_colors(stdscr)
 
     from ui.launch.first_time_launch import first_time_launch
