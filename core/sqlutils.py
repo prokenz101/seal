@@ -22,6 +22,18 @@ def add_user(username, password):
         "INSERT INTO users (username, password_hash) VALUES (%s, %s)",
         (username, password_hash),
     )
+    cur.execute(
+        """CREATE TABLE IF NOT EXISTS credentials (
+    username VARCHAR(16),
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    account VARCHAR(512) NOT NULL,
+    cred_username VARCHAR(512) NOT NULL,
+    cred_password VARCHAR(512) NOT NULL,
+    FOREIGN KEY (username)
+        REFERENCES users(username)
+        ON UPDATE CASCADE
+);"""
+    )
     conn.commit()
     conn.close()
 
