@@ -86,9 +86,5 @@ def main_menu(stdscr, username, master_password):
             elif current_pos == "enter_seal":
                 locker(stdscr, username, master_password)
             else:
-                break
-
-
-    from ui.launch.normal_launch import normal_launch
-
-    normal_launch(stdscr, welcome="Welcome back, ")
+                from ui.launch.normal_launch import normal_launch
+                normal_launch(stdscr, welcome="Welcome back, ")

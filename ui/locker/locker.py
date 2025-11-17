@@ -21,21 +21,6 @@ def locker(stdscr, username, master_password):
     #* Saves on performance since we don't have to derive over and over
     fernet = get_fernet_key(master_password, f"data/salts/{username}_salt.dat")
 
-    conn = connect_mysql()
-    cur = conn.cursor()
-    cur.execute("USE seal")
-
-    cur.execute(
-        """CREATE TABLE IF NOT EXISTS credentials (
-    username VARCHAR(16),
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    account VARCHAR(512) NOT NULL,
-    cred_username VARCHAR(512) NOT NULL,
-    cred_password VARCHAR(512) NOT NULL,
-    FOREIGN KEY (username) REFERENCES users(username)
-);"""
-    )
-    conn.close()
     pointer = 5
     page = 1
     hide = True
@@ -234,5 +219,3 @@ Password: {row[2]}""",
         elif ch == 27:
             stdscr.clear()
             break
-
-    conn.close()

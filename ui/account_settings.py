@@ -213,21 +213,21 @@ def account_settings(stdscr, username, master_password):
                 )
                 addstr(
                     stdscr,
-                    9,
-                    53,
+                    13,
+                    55,
                     "irreversible",
                     curses.color_pair(3) | curses.A_UNDERLINE,
                 )
-                addstr(stdscr, 9, 65, "!", curses.color_pair(3))
+                addstr(stdscr, 13, 67, "!", curses.color_pair(3))
                 addstr(
                     stdscr,
-                    10,
-                    0,
+                    14,
+                    2,
                     "ALL stored passwords and data will be permanently lost.",
                     curses.color_pair(3),
                 )
                 addstr(
-                    stdscr, 12, 0, "To confirm, please type your master password below."
+                    stdscr, 16, 2, "To confirm, please type your master password below."
                 )
                 footer(
                     stdscr,
@@ -237,8 +237,8 @@ def account_settings(stdscr, username, master_password):
 
                 mp = ""
                 while True:
-                    addstr(stdscr, 14, 0, "> " + "*" * len(mp), reset=True)
-                    move(stdscr, 14, 2 + len(mp))
+                    addstr(stdscr, 18, 0, "> " + "*" * len(mp), reset=True)
+                    move(stdscr, 18, 2 + len(mp))
                     stdscr.refresh()
 
                     ch = getch(stdscr)
@@ -257,13 +257,13 @@ def account_settings(stdscr, username, master_password):
 
                             addstr(
                                 stdscr,
-                                16,
+                                18,
                                 0,
-                                "Account deleted successfully.",
+                                "  Account deleted successfully.",
                                 curses.color_pair(2) | curses.A_BOLD,
                                 reset=True,
                             )
-                            addstr(stdscr, 17, 0, "Press any key to continue...")
+                            addstr(stdscr, 19, 0, "  Press any key to continue...", reset=True)
                             getch(stdscr)
 
                             from core.utils import accounts_exist
@@ -280,11 +280,11 @@ def account_settings(stdscr, username, master_password):
                                 stdscr,
                                 16,
                                 0,
-                                "Incorrect password. Account not deleted.",
+                                "  Incorrect password. Account not deleted.",
                                 curses.color_pair(3),
                                 reset=True,
                             )
-                            addstr(stdscr, 17, 0, "Press any key to go back...")
+                            addstr(stdscr, 17, 0, "  Press any key to go back...", reset=True)
                             getch(stdscr)
                             stdscr.clear()
                             break
@@ -300,9 +300,6 @@ def account_settings(stdscr, username, master_password):
                         (32 <= ch <= 126) and (ch not in [92, 39, 34]) and len(mp) < 64
                     ):
                         mp += chr(ch)
-            
-            else:
-                break
 
         elif ch == 27:  #* ESC key
             stdscr.clear()

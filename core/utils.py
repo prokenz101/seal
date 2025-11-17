@@ -1,7 +1,6 @@
 from pickle import dump
-from os import path, listdir
-from os import makedirs, urandom, remove
 from string import ascii_letters, digits
+from os import makedirs, urandom, remove, rename, path, listdir
 
 
 def exception_handler(message="Something went wrong.", exception=None):
