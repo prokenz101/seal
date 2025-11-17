@@ -1,5 +1,9 @@
 import curses
-from core.cutils import addstr, getch, footer, move, reset_footer
+import os
+from core.cutils import addstr, getch, footer, move, reset_footer, reset_line
+from core.sqlutils import change_username, change_master_password
+from ui.setup.master_password import choose_master_password
+from ui.setup.username import choose_username
 
 
 def account_settings(stdscr, username, master_password):
@@ -8,9 +12,15 @@ def account_settings(stdscr, username, master_password):
     stdscr.clear()
 
     colors = [
-        curses.color_pair(7) | curses.A_UNDERLINE,
-        curses.color_pair(3),
+        [curses.color_pair(7) | curses.A_UNDERLINE, curses.color_pair(5), 0],
+        [curses.color_pair(7) | curses.A_UNDERLINE, curses.color_pair(5), 1],
+        [curses.color_pair(9) | curses.A_UNDERLINE, curses.color_pair(1), 1],
+        [curses.color_pair(8) | curses.A_UNDERLINE, curses.color_pair(3), 1],
     ]
+    current_pos = 0
+    continued = None
+    new_username = ""
+    new_password = ""
 
     while True:
         addstr(stdscr, 0, 0, "seal", curses.color_pair(4) | curses.A_BOLD)
@@ -26,6 +36,13 @@ def account_settings(stdscr, username, master_password):
         addstr(stdscr, 4, 1, "Go back", colors[0][colors[0][2]])
         addstr(stdscr, 6, 1, "Change username", colors[1][colors[1][2]])
 
+        addstr(
+            stdscr,
+            8,
+            1,
+            "Change master password",
+            colors[2][colors[2][2]],
+            reset=True,
         )
         reset_line(stdscr, 9, 0)
         if not continued:
@@ -100,8 +117,97 @@ def account_settings(stdscr, username, master_password):
             elif current_pos == 2:  #* Change master password
                 addstr(
                     stdscr,
-                    9,
+                    10,
                     0,
+                    "  To change your master password, please confirm your current password below:",
+                )
+
+                if not continued:
+                    mp = ""
+                    while True:
+                        addstr(stdscr, 12, 0, "> " + "*" * len(mp), reset=True)
+                        move(stdscr, 12, 2 + len(mp))
+                        stdscr.refresh()
+
+                        ch = getch(stdscr)
+                        if ch == curses.KEY_RESIZE:
+                            continue
+
+                        if ch in (curses.KEY_ENTER, 10, 13):
+                            reset_footer(stdscr)
+
+                            if mp == master_password:
+                                new_password = choose_master_password(
+                                    stdscr, username, master_password_only=True
+                                )
+                                if new_password is None:
+                                    break
+
+                                stdscr.clear()
+                                continued = curses.KEY_ENTER
+                                break
+                            else:
+                                addstr(
+                                    stdscr,
+                                    14,
+                                    0,
+                                    "  Incorrect password. Master password not changed.",
+                                    curses.color_pair(3),
+                                    reset=True,
+                                )
+                                addstr(stdscr, 15, 0, "  Press any key to go back...", reset=True)
+                                getch(stdscr)
+                                stdscr.clear()
+                                break
+
+                        elif ch == 27:  #* ESC key
+                            stdscr.clear()
+                            break
+
+                        elif ch in (curses.KEY_BACKSPACE, 127, 8):
+                            mp = mp[:-1]
+
+                        elif (
+                            (32 <= ch <= 126)
+                            and (ch not in [92, 39, 34])
+                            and len(mp) < 64
+                        ):
+                            mp += chr(ch)
+
+                else:
+                    continued = None
+
+                    #* Changing master password
+                    change_master_password(username, master_password, new_password)
+
+                    reset_line(stdscr, 10, 0)
+                    addstr(
+                        stdscr,
+                        10,
+                        0,
+                        "  Pending master password change...",
+                        curses.color_pair(2),
+                    )
+                    addstr(
+                        stdscr,
+                        12,
+                        0,
+                        "  To apply, please restart the application.",
+                        curses.A_BOLD,
+                        reset=True,
+                    )
+                    addstr(stdscr, 13, 0, "  Press any key to exit...", reset=True)
+                    getch(stdscr)
+
+                    curses.endwin()
+                    exit()
+
+            elif current_pos == 3:
+                addstr(stdscr, 12, 2, "Warning:", curses.color_pair(3) | curses.A_BOLD)
+                addstr(
+                    stdscr,
+                    13,
+                    2,
                     "You are about to delete your account. This action is ",
                     curses.color_pair(3),
                 )
