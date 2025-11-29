@@ -262,7 +262,7 @@ def choose_master_password(stdscr, username: str, master_password_only=False):
                                     curses.color_pair(2),
                                     reset=True,
                                 )
-                                addstr(stdscr, 24, 0, "Press any key to continue...")
+                                addstr(stdscr, 24, 0, "Press any key to continue...", reset=True)
                                 reset_footer(stdscr)
                                 getch(stdscr)
 
@@ -288,7 +288,7 @@ def choose_master_password(stdscr, username: str, master_password_only=False):
                                 )
                                 registered = True
                                 addstr(stdscr, 4, 0, "You may now log in.")
-                                addstr(stdscr, 5, 0, "Press any key to continue...")
+                                addstr(stdscr, 5, 0, "Press any key to continue...", reset=True)
                                 getch(stdscr)
 
                                 from ui.launch.normal_launch import normal_launch

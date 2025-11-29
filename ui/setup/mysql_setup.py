@@ -157,7 +157,7 @@ def setup_mysql(stdscr, proceed_to_username=True):
                         curses.color_pair(2),
                         reset=True,
                     )
-                    addstr(stdscr, 10, 0, "Press any key to continue...")
+                    addstr(stdscr, 10, 0, "Press any key to continue...", reset=True)
                     reset_footer(stdscr)
                     getch(stdscr)
 

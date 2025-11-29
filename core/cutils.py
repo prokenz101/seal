@@ -49,6 +49,8 @@ def getch(stdscr):
             "Please do not resize the terminal!",
             curses.color_pair(3) | curses.A_UNDERLINE | curses.A_BOLD,
         )
+        stdscr.move(2, 0)
+        stdscr.clrtoeol()
         stdscr.addstr(2, 0, "Press any key to continue...")
         getch(stdscr)
         stdscr.clear()

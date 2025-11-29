@@ -281,7 +281,7 @@ Password: {'*' * len(password)}""")
                 conn.close()
 
                 addstr(stdscr, 12, 0, "Credential deleted successfully.", curses.color_pair(2))
-                addstr(stdscr, 13, 0, "Press any key to continue...")
+                addstr(stdscr, 13, 0, "Press any key to continue...", reset=True)
 
                 getch(stdscr)
                 stdscr.clear()
