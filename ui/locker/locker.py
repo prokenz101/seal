@@ -5,7 +5,6 @@ from core.sqlutils import (
     get_credential_row,
     get_page_count,
     get_table,
-    connect_mysql,
     get_credentials_row_count,
 )
 from ui.locker.add_credential import add_credential, delete_credential
