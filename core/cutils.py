@@ -115,11 +115,7 @@ def reset_line_bottom(stdscr, y, x):
 
 
 def reset_lines(stdscr, *lines):
-    """Clear multiple specific lines.
-
-    Args:
-        *lines: A list of tuples containing (stdscr, y, x) for each line to reset.
-    """
+    """Clear multiple specific lines."""
 
     for y, x in lines:
         reset_line(stdscr, y, x)
