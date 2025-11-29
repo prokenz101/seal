@@ -86,7 +86,7 @@ Add entries by pressing the 'a' key.""",
                 stdscr,
                 2,
                 58,
-                f"[h] {show_hide} credentials",
+                f"[h] {show_hide} password",
                 curses.A_BOLD | curses.A_UNDERLINE,
             )
             addstr_bottom(stdscr, 1, 10, f"[F4] {copy_username[0]}", copy_username[1])
@@ -105,12 +105,14 @@ Add entries by pressing the 'a' key.""",
                 addstr(stdscr, pointer - 12 * (page - 1), 0, "     ")
                 copy_username = "Copy username", curses.A_NORMAL
                 copy_password = "Copy password", curses.A_NORMAL
+                show_hide = "Show"
                 pointer += 1
                 if not hide:
                     hide = True
                     table = update_table()
             else:
                 if page < get_page_count(username):
+                    show_hide = "Show"
                     page += 1
                     pointer += 1
                     table = update_table()
@@ -120,12 +122,14 @@ Add entries by pressing the 'a' key.""",
                 addstr(stdscr, pointer - 12 * (page - 1), 0, "     ")
                 copy_username = "Copy username", curses.A_NORMAL
                 copy_password = "Copy password", curses.A_NORMAL
+                show_hide = "Show"
                 pointer -= 1
                 if not hide:
                     hide = True
                     table = update_table()
             else:
                 if page > 1:
+                    show_hide = "Show"
                     page -= 1
                     pointer -= 1  #* Bottom row
                     table = update_table()
@@ -134,12 +138,14 @@ Add entries by pressing the 'a' key.""",
             if page < get_page_count(username):
                 page += 1
                 pointer = 5 + 12 * (page - 1)
+                show_hide = "Show"
                 table = update_table()
             
         elif ch == curses.KEY_LEFT:
             if page > 1:
                 page -= 1
                 pointer = 5 + 12 * (page - 1)
+                show_hide = "Show"
                 table = update_table()
 
         elif ch == curses.KEY_F4:
