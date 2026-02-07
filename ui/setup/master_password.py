@@ -253,16 +253,15 @@ def choose_master_password(stdscr, username: str, master_password_only=False):
 
                                 create_salt(username)
 
-                                reset_line(stdscr, 22, 0)
                                 addstr(
                                     stdscr,
-                                    23,
+                                    22,
                                     0,
                                     "[\u2713] Password set successfully!",
                                     curses.color_pair(2),
                                     reset=True,
                                 )
-                                addstr(stdscr, 24, 0, "Press any key to continue...", reset=True)
+                                addstr(stdscr, 23, 0, "Press any key to continue...", reset=True)
                                 reset_footer(stdscr)
                                 getch(stdscr)
 
