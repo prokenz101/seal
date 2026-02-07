@@ -1,7 +1,7 @@
 # seal
-A fast and secure CLI password manager.
+A proof-of-concept password manager.
 
-Runs in a terminal. Python IDLE is not recommended.
+Runs in a terminal (CLI). Python IDLE is not recommended.
 
 <br />
 
